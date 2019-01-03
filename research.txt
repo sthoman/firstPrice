@@ -1,12 +1,29 @@
 General Notes and Project Research
 
-I. 
+I. First Price Sealed Bid Auction
 
 First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
 sealed bids for some some asset within a time frame as long as the bid is above a reserve price for 
 that asset. Bids are private and shielded from all participants. It is analogous to collecting bids
 in a sealed envelope, and waiting until after the auction is over to open each envelope and determine
 the highest bidder. 
+
+The simplest possible version of the auction contract will use a commit-and-reveal scheme where N market
+participants submit a hash of their bid amount during the commitment phase of the auction. The commitment
+phase of the auction will have a publicly defined start and end time. Once the commitment phase end time 
+is reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
+time. During the reveal phase market participants shall submit their actual bid amounts and cryptographic
+salt to a reveal() function. The reveal() function will hash the submitted bid amount from each participant
+using their salt, and check if this hash is equivalent to the hash submitted by that participants during 
+the commitment phase of the auction. If the hashes match, the bid is valid. The contract will keep track 
+of the highest bid as the reveal() function is called by all participants during the reveal phase. Once all
+reveals are complete, the highest bidder can be determined on chain and an order can be signed and filled 
+to complete the transaction. 
+
+It will be necessary to determine how to properly incentivize honest actors and ensure all bidders submit
+during the reveal phase. The intention of the protocol is to ensure participants cannot collude with each 
+other regarding bidding and also are not influenced by knowledge of each others' bids. The purpose would be
+to determine a fair market price for the auctioned asset. 
 
 II. Zero Knowledge Proofs
 
