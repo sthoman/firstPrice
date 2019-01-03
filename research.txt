@@ -1,4 +1,4 @@
-General Notes and Project Research
+General Notes and Project Research - Lighthouse Labs' October 2018 Blockchain Cohort
 
 I. First Price Sealed Bid Auction
 
