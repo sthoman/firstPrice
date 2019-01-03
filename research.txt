@@ -27,5 +27,5 @@ highest bid on chain, without revealing them. This would be something interestin
 
 IV. 0x Protocol
 
-Researching possible use of the 0x protocol to faciliate the auction. 
+Researching possible use of the 0x protocol to facilitate the auction. 
 
