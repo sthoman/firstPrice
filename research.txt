@@ -14,16 +14,17 @@ phase of the auction will have a publicly defined start and end time. Once the c
 is reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
 time. During the reveal phase market participants shall submit their actual bid amounts and cryptographic
 salt to a reveal() function. The reveal() function will hash the submitted bid amount from each participant
-using their salt, and check if this hash is equivalent to the hash submitted by that participants during 
+using their salt, and check if this hash is equivalent to the hash submitted by that same participant during 
 the commitment phase of the auction. If the hashes match, the bid is valid. The contract will keep track 
-of the highest bid as the reveal() function is called by all participants during the reveal phase. Once all
+of the highest bid as the reveal() function is called by each participant during the reveal phase. Once all
 reveals are complete, the highest bidder can be determined on chain and an order can be signed and filled 
 to complete the transaction. 
 
 It will be necessary to determine how to properly incentivize honest actors and ensure all bidders submit
 during the reveal phase. The intention of the protocol is to ensure participants cannot collude with each 
-other regarding bidding and also are not influenced by knowledge of each others' bids. The purpose would be
-to determine a fair market price for the auctioned asset. 
+other regarding bidding and also are not influenced by knowledge of each others' bids until after the auction
+enters the reveal phase (where bids can no longer be submitted). The purpose would be to determine a fair 
+market price for the auctioned asset. 
 
 II. Zero Knowledge Proofs
 
