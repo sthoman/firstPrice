@@ -51,12 +51,10 @@ IV. 0x Protocol
 
 Researching possible use of the 0x protocol to facilitate the auction. 
 
-V. Other Literature
+V. Other Literature and Context
 
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
 https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
-
-
-
-
+https://are.berkeley.edu/~sberto/ARE202svb_auctionsApril.pdf
+https://eprint.iacr.org/2018/704.pdf
