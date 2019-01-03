@@ -23,8 +23,8 @@ to complete the transaction.
 It will be necessary to determine how to properly incentivize honest actors and ensure all bidders submit
 during the reveal phase. The intention of the protocol is to ensure participants cannot collude with each 
 other regarding bidding and also are not influenced by knowledge of each others' bids until after the auction
-enters the reveal phase (where bids can no longer be submitted). The purpose would be to determine a fair 
-market price for the auctioned asset. 
+enters the reveal phase (where bids can no longer be submitted). The purpose would be to determine the highest
+possible fair market price for the auctioned asset. 
 
 II. Zero Knowledge Proofs
 
