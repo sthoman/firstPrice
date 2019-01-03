@@ -25,6 +25,12 @@ Multiple parties need to agree on a highest bid without necessarily revealing an
 parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
 highest bid on chain, without revealing them. This would be something interesting to research. 
 
+For an MVP this may be overkill. In general the problem to solve is a problem of revealing a highest 
+bid to all participants without revealing every bid. This wikipedia article discusses a case where a
+group of participants determine the highest salary amongst them, 
+
+https://en.wikipedia.org/wiki/Secure_multi-party_computation
+
 IV. 0x Protocol
 
 Researching possible use of the 0x protocol to facilitate the auction. 
