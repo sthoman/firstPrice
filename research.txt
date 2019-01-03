@@ -1,0 +1,19 @@
+General Notes and Project Research
+
+I. 
+
+First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
+sealed bids for some some asset within a time frame as long as the bid is above a reserve price for 
+that asset. Bids are private and shielded from all participants. It is analogous to collecting bids
+in a sealed envelope, and waiting until after the auction is over to open each envelope and determine
+the highest bidder. 
+
+II. Zero Knowledge Proofs
+
+https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
+
+Will explore zero knowledge proofs as a way to   If ZKPs could also facilitate some basic KYC that 
+would be interesting too. For instance, ero knowledge range proofs can prove that a persons current 
+jurisdiction is within some range without necessarily revealing the jurisdiction itself. 
+
+https://github.com/sthoman/zkproofs
