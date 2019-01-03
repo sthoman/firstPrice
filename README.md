@@ -1,2 +1,2 @@
 # firstPrice
-First price sealed bid auctions
+first price sealed bid auctions on the ethereum blockchain
