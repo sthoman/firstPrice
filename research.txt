@@ -8,23 +8,24 @@ that asset. Bids are private and shielded from all participants. It is analogous
 in a sealed envelope, and waiting until after the auction is over to open each envelope and determine
 the highest bidder. 
 
-The simplest possible version of the auction contract will use a commit-and-reveal scheme where N market
-participants submit a hash of their bid amount during the commitment phase of the auction. The commitment
-phase of the auction will have a publicly defined start and end time. Once the commitment phase end time 
-is reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
-time. During the reveal phase market participants shall submit their actual bid amounts and cryptographic
-salt to a reveal() function. The reveal() function will hash the submitted bid amount from each participant
-using their salt, and check if this hash is equivalent to the hash submitted by that same participant during 
-the commitment phase of the auction. If the hashes match, the bid is valid. The contract will keep track 
-of the highest bid as the reveal() function is called by each participant during the reveal phase. Once all
-reveals are complete, the highest bidder can be determined on chain and an order can be signed and filled 
-to complete the transaction. 
+The simplest version of the auction contract will use a commitment scheme where N market participants 
+submit a hash of their bid amount during the commitment phase of the auction. The commitment phase of 
+the auction will have a publicly defined start and end time. Once the commitment phase end time is 
+reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
+time. During the reveal phase market participants shall submit their true bid amounts and cryptographic
+salt to a reveal() function. The reveal() function will hash the true bid amount from each participant
+using their salt, and check if this hash is equivalent to the hash submitted by that same participant 
+during the commitment phase of the auction. If the hashes match, the bid is valid. The contract will 
+track the highest bid as the reveal() function is called by each participant during the reveal phase. 
+Once all reveals are complete, the highest bidder can be determined on chain and an order can be 
+signed and filled to complete the transaction. 
 
-It will be necessary to determine how to properly incentivize honest actors and ensure all bidders submit
-during the reveal phase. The intention of the protocol is to ensure participants cannot collude with each 
-other regarding bidding and also are not influenced by knowledge of each others' bids until after the auction
-enters the reveal phase (where bids can no longer be submitted). The purpose would be to determine the highest
-possible fair market price for the auctioned asset. It will also be necessary to determine a solution for ties. 
+It will be necessary to determine how to properly incentivize honest actors and ensure all bidders 
+submit during the reveal phase. The intention of the protocol is to ensure participants cannot collude 
+with each other regarding bidding and also are not influenced by knowledge of each others' bids until 
+after the auction enters the reveal phase (where bids can no longer be submitted). The purpose would 
+be to determine the highest possible fair market price for the auctioned asset. It will also be  
+necessary to determine a solution for ties. 
 
 II. Zero Knowledge Proofs
 
@@ -53,8 +54,8 @@ Researching possible use of the 0x protocol to facilitate the auction.
 
 V. Other Literature and Context
 
+http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
 https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
-http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://are.berkeley.edu/~sberto/ARE202svb_auctionsApril.pdf
 https://eprint.iacr.org/2018/704.pdf
