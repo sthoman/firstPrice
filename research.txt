@@ -19,5 +19,13 @@ is within some range without necessarily revealing the jurisdiction itself.
 
 https://github.com/sthoman/zkproofs
 
-III. 0x Protocol
+III. Secure Multi-party Computation
+
+Multiple parties need to agree on a highest bid without necessarily revealing any of the bids to all 
+parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
+highest bid on chain, without revealing them. This would be something interesting to research. 
+
+IV. 0x Protocol
+
+Researching possible use of the 0x protocol to faciliate the auction. 
 
