@@ -12,8 +12,12 @@ II. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
-Will explore zero knowledge proofs as a way to   If ZKPs could also facilitate some basic KYC that 
-would be interesting too. For instance, ero knowledge range proofs can prove that a persons current 
-jurisdiction is within some range without necessarily revealing the jurisdiction itself. 
+Will explore zero knowledge proofs as a way to prove the existence of a highest, winning bid, without
+necessarily revealing any bid amounts. If ZKPs could also facilitate some basic KYC that would be of 
+interest too. For instance, zero knowledge range proofs can prove that a persons current jurisdiction 
+is within some range without necessarily revealing the jurisdiction itself. 
 
 https://github.com/sthoman/zkproofs
+
+III. 0x Protocol
+
