@@ -35,7 +35,14 @@ Each participants that commits to a bid during the commitment phase shall also b
 certain amount of funds for the duration of the auction. This is to give the seller assurance that the 
 bidder can cover their bid in the event they win the auction. This needs to be investigated more. 
 
-III. Zero Knowledge Proofs
+III. Griefing 
+
+Need to solve a potential griefing problem where bidders, during the reveal phase, could witness others'
+revealed bid amounts and choose not to reveal. The auction will not execute any trade unless all bidders
+call the reveal() function, however an individual bidder could still attempt to sabotage the auction. It
+is a problem that at least applies to the simplest implementation of the auction contract. 
+
+IV. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
@@ -45,7 +52,7 @@ facilitate some basic KYC rules that would be of interest too. For instance, zer
 proofs can prove that an end users' current jurisdiction is within some range without necessarily 
 revealing the jurisdiction itself or other identifying information about the end user. 
 
-IV. Secure Multi-party Computation
+V. Secure Multi-party Computation
 
 Multiple parties need to agree on a highest bid without necessarily revealing any of the bids to all 
 parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
@@ -57,11 +64,11 @@ group of participants determine the highest salary amongst them,
 
 https://en.wikipedia.org/wiki/Secure_multi-party_computation
 
-V. 0x Protocol
+VI. 0x Protocol
 
 Researching possible use of the 0x protocol to facilitate the auction. 
 
-VI. Other Literature and Context
+VII. Other Literature and Context
 
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
