@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity 0.4.24;
+pragma solidity ^0.4.25;
 
 // A basic prototype SealedAuction contract, just parts of a basic commit scheme ensuring
 // auction participants are not aware of each others' bids during the commit phase of the
@@ -80,7 +80,7 @@ contract SealedAuction
             "INVALID_REVEAL_UNIQUENESS"
       );
       require(
-          bidders[msg.sender].bid == keccak256(amount, salt),
+          bidders[msg.sender].bid == keccak256(abi.encodePacked(amount, salt)),
             "INVALID_REVEAL"
       );
       //TODO requires for auction state
