@@ -29,7 +29,13 @@ after the auction enters the reveal phase (where bids can no longer be submitted
 be to determine the highest possible fair market price for the auctioned asset. It will also be  
 necessary to determine a solution for ties. 
 
-II. Zero Knowledge Proofs
+II. Escrow of Funds
+
+Each participants that commits to a bid during the commitment phase shall also be required to escrow a 
+certain amount of funds for the duration of the auction. This is to give the seller assurance that the 
+bidder can cover their bid in the event they win the auction. This needs to be investigated more. 
+
+III. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
@@ -39,7 +45,7 @@ facilitate some basic KYC rules that would be of interest too. For instance, zer
 proofs can prove that an end users' current jurisdiction is within some range without necessarily 
 revealing the jurisdiction itself or other identifying information about the end user. 
 
-III. Secure Multi-party Computation
+IV. Secure Multi-party Computation
 
 Multiple parties need to agree on a highest bid without necessarily revealing any of the bids to all 
 parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
@@ -51,11 +57,11 @@ group of participants determine the highest salary amongst them,
 
 https://en.wikipedia.org/wiki/Secure_multi-party_computation
 
-IV. 0x Protocol
+V. 0x Protocol
 
 Researching possible use of the 0x protocol to facilitate the auction. 
 
-V. Other Literature and Context
+VI. Other Literature and Context
 
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
