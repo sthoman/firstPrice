@@ -86,7 +86,9 @@ contract FPSBAuction is
     // amount after the auction is closed. This is analogous to opening
     // a sealed envelope containing each bidders' bid amount. When the
     // auction is over this contract can determine the highest bid.
-    function addReveal(bytes32 salt, uint256 amount) {
+    function addReveal(bytes32 salt, uint256 amount)
+      public
+    {
       // Revealing a commitment to a previous bid requires the sender
       // to provide their salt and the actual bid amount. It should not
       // already be revealed
@@ -95,7 +97,7 @@ contract FPSBAuction is
             "INVALID_REVEAL_UNIQUENESS"
       );
       require(
-          bidders[msg.sender].bid == keccak256(amount, salt),
+          bidders[msg.sender].bid == keccak256(abi.encodePacked(amount, salt)),
             "INVALID_REVEAL"
       );
       ////TODO requires for auction state
@@ -145,7 +147,7 @@ contract FPSBAuction is
         );
         // Validate that this order came from the bidder that committed, which also validates the bidder has revealed
         require(
-            bidders[msg.sender].bid == keccak256(buyOrder.makerAssetAmount, bidderDetails.salt),
+            bidders[msg.sender].bid == keccak256(abi.encodePacked(buyOrder.makerAssetAmount, bidderDetails.salt)),
             "INVALID_BIDDER"
         );
         // Finally, validate that this is the highest bid
@@ -173,7 +175,7 @@ contract FPSBAuction is
     function getBidderDetails(
         LibOrder.Order memory order
     )
-        public
+        public pure
         returns (BidderDetails memory bidderDetails)
     {
         uint256 makerAssetDataLength = order.makerAssetData.length;
@@ -194,7 +196,7 @@ contract FPSBAuction is
     function getAuctionDetails(
         LibOrder.Order memory order
     )
-        public
+        public view
         returns (AuctionDetails memory auctionDetails)
     {
         uint256 makerAssetDataLength = order.makerAssetData.length;

@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.25;
+pragma solidity 0.4.24;
 
 // A basic prototype SealedAuction contract, just parts of a basic commit scheme ensuring
 // auction participants are not aware of each others' bids during the commit phase of the

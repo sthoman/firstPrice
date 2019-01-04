@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/sthoman/firstPrice#readme",
   "dependencies": {
-    "solc": "^0.4.25",
-    "truffle": "^4.0.1"
+    "@0x/contracts-protocol": "^2.1.59",
+    "truffle": "4.1.14",
+    "solc": "0.4.24"
   }
 }
