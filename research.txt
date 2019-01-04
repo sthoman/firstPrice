@@ -4,7 +4,7 @@ I. First Price Sealed Bid Auction
 
 First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
 sealed bids for some some asset within a time frame as long as the bid is above a reserve price for 
-that asset. Bids are private and shielded from all participants. It is analogous to collecting bids
+that asset. Bids are private and hidden from all the participants. It is analogous to collecting bids
 in a sealed envelope, and waiting until after the auction is over to open each envelope and determine
 the highest bidder. 
 
@@ -12,13 +12,15 @@ The simplest version of the auction contract will use a commitment scheme where 
 submit a hash of their bid amount during the commitment phase of the auction. The commitment phase of 
 the auction will have a publicly defined start and end time. Once the commitment phase end time is 
 reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
-time. During the reveal phase market participants shall submit their true bid amounts and cryptographic
-salt to a reveal() function. The reveal() function will hash the true bid amount from each participant
-using their salt, and check if this hash is equivalent to the hash submitted by that same participant 
-during the commitment phase of the auction. If the hashes match, the bid is valid. The contract will 
-track the highest bid as the reveal() function is called by each participant during the reveal phase. 
-Once all reveals are complete, the highest bidder can be determined on chain and an order can be 
-signed and filled to complete the transaction. 
+time that must be greater than the commitment phase end time. During the reveal phase market participants 
+shall submit their true bid amounts and cryptographic salt to a reveal() function. The reveal() function 
+will hash the true bid amount from each participant using their own unique salt value, and check if this 
+hash is equivalent to the hash submitted by that same participant during the commitment phase of the auction.
+It is vitally important that participants' salt values remain secret prior to the reveal phase of the auction. 
+
+If the resultant hashes match, the bid is valid. The contract will track the highest bid as the reveal() 
+function is called by each participant during the reveal phase. Once all reveals are complete, the highest
+bidder can be determined on chain and an order can be signed and filled to complete the transaction. 
 
 It will be necessary to determine how to properly incentivize honest actors and ensure all bidders 
 submit during the reveal phase. The intention of the protocol is to ensure participants cannot collude 
@@ -31,10 +33,11 @@ II. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
-Will explore zero knowledge proofs as a way to prove the existence of a highest, winning bid, without
-necessarily revealing any bid amounts. If ZKPs could also facilitate some basic KYC that would be of 
-interest too. For instance, zero knowledge range proofs can prove that a persons current jurisdiction 
-is within some range without necessarily revealing the jurisdiction itself. 
+Will explore zero knowledge proofs as a way to prove the owner of the highest, winning bid, without
+necessarily revealing all bid amounts or bidders' identifying information. If ZKPs could be used to
+facilitate some basic KYC rules that would be of interest too. For instance, zero knowledge range 
+proofs can prove that an end users' current jurisdiction is within some range without necessarily 
+revealing the jurisdiction itself or other identifying information about the end user. 
 
 III. Secure Multi-party Computation
 
