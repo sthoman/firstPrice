@@ -149,6 +149,11 @@ contract FPSBAuction is
             bidders[msg.sender].bid == keccak256(abi.encodePacked(buyOrder.makerAssetAmount, bidderDetails.salt)),
             "INVALID_BIDDER"
         );
+        // Ensure all reveals are in
+        require(
+            commitCount == revealCount,
+            "INVALID_REVEAL_PHASE"
+        );
         // Finally, validate that this is the highest bid
         require(
             msg.sender == highestBidder,
