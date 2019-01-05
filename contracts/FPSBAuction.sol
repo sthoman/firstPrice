@@ -47,6 +47,7 @@ contract FPSBAuction is
         bytes32 bid;
         uint256 amount;
         bool revealed;
+        bool committed;
     }
 
     // solhint-disable var-name-mixedcase
@@ -75,10 +76,9 @@ contract FPSBAuction is
       public
     {
       require(
-            bidders[msg.sender].bid == bid,
-            "INVALID_COMMIT_UNIQUENESS"
+            bidders[msg.sender].committed == false, "INVALID_COMMIT_UNIQUENESS"
       );
-      bidders[msg.sender] = BidderDetails(0, bid, 0, false);
+      bidders[msg.sender] = BidderDetails(0, bid, 0, false, true);
       commitCount++;
     }
 
@@ -93,7 +93,7 @@ contract FPSBAuction is
       // to provide their salt and the actual bid amount. It should not
       // already be revealed
       require(
-          bidders[msg.sender].revealed == true,
+          bidders[msg.sender].revealed == false,
             "INVALID_REVEAL_UNIQUENESS"
       );
       require(
