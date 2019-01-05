@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "compile": "./node_modules/.bin/truffle compile"
+    "compile": "./node_modules/.bin/truffle compile",
+    "console": "./node_modules/.bin/truffle console --network bridge"
   },
   "repository": {
     "type": "git",

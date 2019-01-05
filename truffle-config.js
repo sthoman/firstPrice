@@ -40,6 +40,21 @@ module.exports = {
    */
 
   networks: {
+    ganache: {
+        host: "localhost",
+        port: 7545,
+        network_id: "*"
+    },
+    bridge: {
+        host: "localhost",
+        port: 8545,
+        network_id: "*"
+    },
+    kovan: {
+        host: "https://kovan.infura.io",
+        port: 443,
+        network_id: "*"
+    }
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache-cli, geth or parity) in a separate terminal

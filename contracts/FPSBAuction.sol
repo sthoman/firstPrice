@@ -64,24 +64,29 @@ contract FPSBAuction is
     mapping(address => BidderDetails) public bidders;
 
     //
-    constructor(address _exchange)
+    //constructor(address _exchange)
+    constructor()
         public
     {
-        EXCHANGE = IExchange(_exchange);
+        EXCHANGE = IExchange(address(0)); ////TODO temporary workaround
     }
 
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during the reveal phase by ecrecover.
     function commit(bytes32 bid, bytes signature)
-      public
+      public returns (address)
     {
-      address sender = ecr(bid, signature);
+      address senderAddress = ecr(bid, signature);
       require(
-            bidders[sender].committed == false, "INVALID_COMMIT_UNIQUENESS"
+            senderAddress != address(0), "INVALID_ECRECOVER"
       );
-      bidders[sender] = BidderDetails(0, bid, 0, false, true);
+      require(
+            bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
+      );
+      bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
       commitCount++;
+      return senderAddress; 
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
