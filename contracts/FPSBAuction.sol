@@ -75,7 +75,8 @@ contract FPSBAuction is
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during the reveal phase by ecrecover.
     function commit(bytes32 bid, bytes signature)
-      public returns (address)
+      public
+      //returns (address)
     {
       address senderAddress = ecr(bid, signature);
       require(
@@ -87,7 +88,7 @@ contract FPSBAuction is
     //  );
       bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
     //  commitCount++;
-      return senderAddress;
+    //  return senderAddress;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid

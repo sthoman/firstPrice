@@ -1,3 +1,4 @@
 node_modules/
 build/
 middleware/venv/
+middleware/app/contracts/
