@@ -81,12 +81,13 @@ contract FPSBAuction is
       require(
             senderAddress != address(0), "INVALID_ECRECOVER"
       );
-      require(
-            bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
-      );
+    //// TODO this function works for ECrecover but fails due to too much gas usage (investigate)
+    //  require(
+    //        bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
+    //  );
       bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
-      commitCount++;
-      return senderAddress; 
+    //  commitCount++;
+      return senderAddress;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid

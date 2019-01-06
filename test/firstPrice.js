@@ -9,7 +9,6 @@ contract('FPSBAuction Contract Tests', accounts => {
     fpsbAuction = await FPSBAuction.deployed();
     fpsbAuctionAddr = fpsbAuction.address;
     fpsbAuctionCommit = await fpsbAuction.commit.call(hexMessageHash, hexSignature);
-    console.log(fpsbAuctionCommit);
     assert(fpsbAuctionCommit, 'Correctly used ecrecover for a bid commitment')
   });
 

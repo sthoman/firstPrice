@@ -1,33 +1,52 @@
-from flask import Flask
-from flask import Flask, render_template
-from flask_socketio import SocketIO, join_room, emit
+import json
+from flask import Flask, Response, request, jsonify
+from marshmallow import Schema, fields, ValidationError
+from web3 import Web3
+from eth_account.messages import defunct_hash_message
+
+class BidSchema(Schema):
+    bid = fields.String(required=True)
+    address = fields.String(required=True)
+
+
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+
 
 app = Flask(__name__)
-socketio = SocketIO(app)
-ROOMS = {} # dict to track active rooms
 
-from app import routes
 
-@socketio.on('create')
-def on_create(data):
-    """Create a game lobby"""
-    emit('join_room', {'room': 1})
+@app.route("/auction/commit", methods=['POST'])
+def transaction():
 
-if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    w3.eth.defaultAccount = w3.eth.accounts[1]
+    with open("./app/fpsbAuction.json", 'r') as f:
+        datastore = json.load(f)
+    abi = datastore["abi"]
+    #contract_address = datastore["contract_address"]
 
-## decent cult Github
+    # Create the contract instance with the newly-deployed address
+    #body = request.get_json()
+    print(request.form)
 
-## generating the past is blockchain, a past-generation machine
+    #result, error = BidSchema().load(body)
+    #if error:
+    #    return jsonify(error), 422
 
-# non-fungible token to represent physical assets, e.g. antiques ERC721
-# non-fungible token to represent digital upload - feasible project
+    address = w3.toChecksumAddress(request.form['address'])
+    auction = w3.eth.contract(
+        address=address, abi=abi,
+    )
 
-# content creation, generally
+    # Commitment scheme
+    tx_account = w3.eth.account.create('commit test account now')
+    tx_private_key = tx_account.privateKey;
+    msg = request.form['bid']
+    msgHash = defunct_hash_message(text=msg)
 
-# legacy management
+    tx_sig = w3.eth.account.signHash(msgHash, private_key=tx_private_key)
 
-# look up Skinny CREATE2
+    recovered_address = auction.functions.commit(
+        msgHash, tx_sig['signature']
+    ).call()
 
-# the basic idea of all this is that users act as if they are on the blockchain
-# even off-chain, and if disputes arise then only on-chain solutions needed
+    return jsonify({"address": recovered_address}), 200
