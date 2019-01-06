@@ -15,30 +15,39 @@ app = Flask(__name__)
 
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
+
+
+
 dir = os.path.dirname(__file__)
 path = os.path.join(dir, 'contracts/FPSBAuction.json')
 
 with open(path, 'r') as f:
     datastore = json.load(f)
 abi = datastore["abi"]
+networks = datastore["networks"]
+address_h = '0x'
+
+for n in networks:
+    address_h = networks[n]['address'];
 
 
 
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
 
-    address = w3.toChecksumAddress('0xb757bf14aa8d752f85ff65c572e4c7c0b380cd15') #TODO will not be hardcoded
+    print(address_h)
+    address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
 
     bid = request.form['bid']
     salt = request.form['salt']
-    msgHash = w3.soliditySha3(['bytes32','bytes32'], [bytes(bid.encode()), bytes(salt.encode())])
+    hash = w3.soliditySha3(['bytes32','bytes32'], [bytes(bid.encode()), bytes(salt.encode())])
 
-    print(w3.toHex(msgHash));
+    print(w3.toHex(hash));
 
     sig = request.form['signature']
 
-    ecrec = auction.functions.commit(msgHash, sig).call()
+    ecrec = auction.functions.commit(hash, sig).call()
 
     return jsonify({"response": ""}), 200
 
@@ -47,7 +56,8 @@ def auctionCommit():
 @app.route("/auction/reveal", methods=['POST'])
 def auctionReveal():
 
-    address = w3.toChecksumAddress('0xb757bf14aa8d752f85ff65c572e4c7c0b380cd15')
+    print(address_h)
+    address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
 
     bid = request.form['bid']
