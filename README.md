@@ -3,9 +3,9 @@ first price sealed bid auctions on the ethereum blockchain
 
 see research.txt for notes
 
-requirements,
+High level reqs,
 
-ganache-cli 
+ganache-cli
 python v3.7
 solc v0.4.24
 
