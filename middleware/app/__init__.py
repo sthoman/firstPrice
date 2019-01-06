@@ -17,31 +17,39 @@ w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
 
 
-
 dir = os.path.dirname(__file__)
 path = os.path.join(dir, 'contracts/FPSBAuction.json')
 
 with open(path, 'r') as f:
     datastore = json.load(f)
 abi = datastore["abi"]
-networks = datastore["networks"]
-address_h = '0x'
 
-for n in networks:
-    address_h = networks[n]['address'];
+def getLatestContractAddress():
+    with open(path, 'r') as f:
+        datastoreLocal = json.load(f)
+    abi = datastoreLocal["abi"]
+
+    networks = datastoreLocal["networks"]
+    address_h = ''
+
+    for n in networks:
+        address_h = networks[n]['address'];
+
+    return address_h;
 
 
 
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
 
-    print(address_h)
+    # TODO don't need to do this every time but this makes testing more convenient with frequent re-deployments
+    address_h = getLatestContractAddress()
     address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
 
-    bid = request.form['bid']
+    bid = int(request.form['bid'])
     salt = request.form['salt']
-    hash = w3.soliditySha3(['bytes32','bytes32'], [bytes(bid.encode()), bytes(salt.encode())])
+    hash = w3.soliditySha3(['uint256','string'], [bid, salt])
 
     print(w3.toHex(hash));
 
@@ -49,22 +57,22 @@ def auctionCommit():
 
     ecrec = auction.functions.commit(hash, sig).call()
 
-    return jsonify({"response": ""}), 200
+    return jsonify({"response": ecrec}), 200
 
 
 
 @app.route("/auction/reveal", methods=['POST'])
 def auctionReveal():
 
-    print(address_h)
+    address_h = getLatestContractAddress()
     address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
 
-    bid = request.form['bid']
+    bid = int(request.form['bid'])
     salt = request.form['salt']
-    sig = request.form['signature'].encode()
+    sig = request.form['signature']
 
-    ecrec = auction.functions.reveal(salt, bid, sig).call()
+    ecrec = auction.functions.reveal(bid, salt, sig).call()
     ecrecHex = w3.toHex(ecrec)
 
     return jsonify({"response": ecrecHex}), 200
