@@ -30,3 +30,9 @@ the middleware is a python flask server, requires venv and solc v0.4.24
 see /middleware/app/__init__.py for the flask routes which utilize the ECRecover scheme
 
 must run truffle deployment before starting middleware
+
+cd middleware
+
+source venv/bin/activate
+
+pip install -r requirements.txt
