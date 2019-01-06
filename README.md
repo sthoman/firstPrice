@@ -5,7 +5,7 @@ see research.txt for notes
 
 requirements,
 
-ganache-cli or other RPC node of choice, running on localhost port 8545 for debugging
+ganache-cli 
 python v3.7
 solc v0.4.24
 
