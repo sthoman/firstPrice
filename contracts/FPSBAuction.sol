@@ -71,24 +71,28 @@ contract FPSBAuction is
         EXCHANGE = IExchange(address(0)); ////TODO temporary workaround
     }
 
+    //
+    //
+    function getBidderDetails(address bidder) public view returns (bytes32) {
+      return
+        bidders[bidder].bid;
+    }
+
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during the reveal phase by ecrecover.
     function commit(bytes32 bid, bytes signature)
       public
-      returns (address)
     {
       address senderAddress = ecr(bid, signature);
       require(
             senderAddress != address(0), "INVALID_ECRECOVER"
       );
-    //// TODO this function works for ECrecover but fails due to too much gas usage (investigate)
-    //  require(
-    //        bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
-    //  );
+      require(
+            bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
+      );
       bidders[senderAddress] = BidderDetails(0, 0, bid, false, true);
-    //  commitCount++;
-      return senderAddress;
+      commitCount++;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
@@ -97,26 +101,23 @@ contract FPSBAuction is
     // auction is over this contract can determine the highest bid.
     function reveal(uint256 amount, string salt, bytes signature)
       public
-      returns (bytes32)
     {
       // Revealing a commitment to a previous bid requires the sender
       // to provide their salt and the actual bid amount.
       bytes32 hashed = keccak256(abi.encodePacked(amount, salt));
       address sender = ecr(hashed, signature);
-    //  require(
-    //      bidders[sender].bid == hashed,
-    //        "INVALID_REVEAL"
-    //  );
+      require(
+          bidders[sender].bid == hashed,
+            "INVALID_REVEAL"
+      );
       //TODO requires for auction state, also sender amount should not be string ultimately
-    //  bidders[sender].revealed = true;
-    //  bidders[sender].amount = amount;
-      //
-    //  if (bidders[sender].amount > highestBid) {
-    //    highestBid = bidders[sender].amount;
-    //    highestBidder = sender;
-    //  }
+      bidders[sender].revealed = true;
+      bidders[sender].amount = amount;
+      if (bidders[sender].amount > highestBid) {
+        highestBid = bidders[sender].amount;
+        highestBidder = sender;
+      }
       revealCount++;
-      return hashed;
     }
 
     /// @dev Matches the buy and sell orders at an amount given the rules of the auction

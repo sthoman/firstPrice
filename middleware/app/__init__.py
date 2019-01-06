@@ -41,6 +41,8 @@ def getLatestContractAddress():
 
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
+    # set pre-funded account as sender
+    w3.eth.defaultAccount = w3.eth.accounts[0]
 
     # TODO don't need to do this every time but this makes testing more convenient with frequent re-deployments
     address_h = getLatestContractAddress()
@@ -55,9 +57,10 @@ def auctionCommit():
 
     sig = request.form['signature']
 
-    ecrec = auction.functions.commit(hash, sig).call()
+    tx_hash = auction.functions.commit(hash, sig).transact()
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
-    return jsonify({"response": ecrec}), 200
+    return jsonify({"response": ""}), 200
 
 
 
@@ -72,10 +75,10 @@ def auctionReveal():
     salt = request.form['salt']
     sig = request.form['signature']
 
-    ecrec = auction.functions.reveal(bid, salt, sig).call()
-    ecrecHex = w3.toHex(ecrec)
+    tx_hash = auction.functions.reveal(bid, salt, sig).transact()
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
-    return jsonify({"response": ecrecHex}), 200
+    return jsonify({"response": ""}), 200
 
 
 
