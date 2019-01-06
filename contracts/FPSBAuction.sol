@@ -46,7 +46,7 @@ contract FPSBAuction is
     struct BidderDetails {
         uint256 salt;
         bytes32 bid;
-        uint256 amount;
+        bytes32 amount;
         bool revealed;
         bool committed;
     }
@@ -57,7 +57,7 @@ contract FPSBAuction is
     // highest bid
     uint256 commitCount;
     uint256 revealCount;
-    uint256 highestBid;
+    bytes32 highestBid;
     address highestBidder;
 
     // bidders
@@ -76,7 +76,7 @@ contract FPSBAuction is
     // hash can be validated during the reveal phase by ecrecover.
     function commit(bytes32 bid, bytes signature)
       public
-      returns (address)
+    //  returns (address)
     {
       address senderAddress = ecr(bid, signature);
       require(
@@ -88,15 +88,16 @@ contract FPSBAuction is
     //  );
       bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
     //  commitCount++;
-      return senderAddress;
+    //  return senderAddress;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
     // amount after the auction is closed. This is analogous to opening
     // a sealed envelope containing each bidders' bid amount. When the
     // auction is over this contract can determine the highest bid.
-    function reveal(bytes32 salt, uint256 amount, bytes signature)
+    function reveal(bytes32 salt, bytes32 amount, bytes signature)
       public
+    //  returns (bytes32)
     {
       // Revealing a commitment to a previous bid requires the sender
       // to provide their salt and the actual bid amount.
@@ -106,15 +107,16 @@ contract FPSBAuction is
           bidders[sender].bid == hashed,
             "INVALID_REVEAL"
       );
-      ////TODO requires for auction state
+      //TODO requires for auction state
       bidders[sender].revealed = true;
       bidders[sender].amount = amount;
-      ////
+      //
       if (bidders[sender].amount > highestBid) {
         highestBid = bidders[sender].amount;
         highestBidder = sender;
       }
       revealCount++;
+    //  return hashed;
     }
 
     /// @dev Matches the buy and sell orders at an amount given the rules of the auction
