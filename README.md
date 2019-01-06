@@ -6,18 +6,19 @@ see research.txt for notes
 High level reqs,
 
 ganache-cli
+
 python v3.7
+
 solc v0.4.24
 
 specific Solidity version installed globally via HomeBrew,
 
 brew unlink solidity
+
 brew install https://raw.githubusercontent.com/ethereum/homebrew-ethereum/9599ce8371d9de039988f89ed577460e58a0f56a/solidity.rb
 
 For truffle deployments,
 
-npm install
-npm run compile
 npm run deploy
 
 For the middleware, this npm command is dependent on python and starts the middleware,
