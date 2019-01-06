@@ -29,20 +29,35 @@ after the auction enters the reveal phase (where bids can no longer be submitted
 be to determine the highest possible fair market price for the auctioned asset. It will also be  
 necessary to determine a solution for ties. 
 
-II. Escrow of Funds
+II. State Channels 
+
+The commitment scheme described in (I) can be modified to use ecrecover so that only signed transactions
+may be sent to the auction contract, without requiring the account owner to send transactions from their
+own account. Signed commitments (bids) could be sent on behalf of an account owner through state channel
+middleware. 
+
+The auction contract can use ecrecover to retrieve a bidders' ethereum address using their hashed bid
+amount and signature when calling either commit() or reveal(). Signed bid commitments and bid reveals
+could be queued in a centralized message queue of immutable off-chain representations of on-chain eth
+transactions. 
+
+This would create a point of centralization in the architecture, however, as a naive queueing service 
+the middleware could be scaled and/or decentralized in a variety of ways. 
+
+III. Escrow of Funds
 
 Each participant that commits to a bid during the commitment phase shall also be required to escrow a 
 certain amount of funds for the duration of the auction. This is to give the seller assurance that the 
 bidder can cover their bid in the event they win the auction. This needs to be investigated more. 
 
-III. Griefing 
+IV. Griefing 
 
 Need to solve a potential griefing problem where bidders, during the reveal phase, could witness others'
 revealed bid amounts and choose not to reveal. The auction will not execute any trade unless all bidders
 call the reveal() function, however an individual bidder could still attempt to sabotage the auction. It
 is a problem that at least applies to the simplest implementation of the auction contract. 
 
-IV. Zero Knowledge Proofs
+V. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
@@ -52,7 +67,7 @@ facilitate some basic KYC rules that would be of interest too. For instance, zer
 proofs can prove that an end users' current jurisdiction is within some range without necessarily 
 revealing the jurisdiction itself or other identifying information about the end user. 
 
-V. Secure Multi-party Computation
+VI. Secure Multi-party Computation
 
 Multiple parties need to agree on a highest bid without necessarily revealing any of the bids to all 
 parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
@@ -64,14 +79,14 @@ where a group of participants determine the highest salary amongst them,
 
 https://en.wikipedia.org/wiki/Secure_multi-party_computation
 
-VI. 0x Protocol
+VII. 0x Protocol
 
 Researching possible use of the 0x protocol to facilitate the auction. Overall gas fees should be 
 minimized if possible. Having to record every commit and reveal on chain is not necessarily ideal
 but may be fine for the minimum solution. By using 0x this auction commit-reveal scheme can be used
 for a variety of crypto assets, potentially. 
 
-VII. Other Literature and Context
+VIII. Other Literature and Context
 
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf

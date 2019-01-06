@@ -26,11 +26,12 @@ import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC721Token/IERC721Token.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
+import "./ECRecover.sol";
 
 // A basic prototype FPSBAuction contract implemented as a 0x extension
 // contract.
 contract FPSBAuction is
-  SafeMath
+  SafeMath, ECRecover
 {
     using LibBytes for bytes;
 
@@ -63,50 +64,55 @@ contract FPSBAuction is
     mapping(address => BidderDetails) public bidders;
 
     //
-    constructor(address _exchange)
+    //constructor(address _exchange)
+    constructor()
         public
     {
-        EXCHANGE = IExchange(_exchange);
+        EXCHANGE = IExchange(address(0)); ////TODO temporary workaround
     }
 
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
-    // can later be validated during the reveal phase.
-    function addCommit(bytes32 bid)
+    // hash can be validated during the reveal phase by ecrecover.
+    function commit(bytes32 bid, bytes signature)
       public
+      returns (address)
     {
+      address senderAddress = ecr(bid, signature);
       require(
-            bidders[msg.sender].committed == false, "INVALID_COMMIT_UNIQUENESS"
+            senderAddress != address(0), "INVALID_ECRECOVER"
       );
-      bidders[msg.sender] = BidderDetails(0, bid, 0, false, true);
-      commitCount++;
+    //// TODO this function works for ECrecover but fails due to too much gas usage (investigate)
+    //  require(
+    //        bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
+    //  );
+      bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
+    //  commitCount++;
+      return senderAddress;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
     // amount after the auction is closed. This is analogous to opening
     // a sealed envelope containing each bidders' bid amount. When the
     // auction is over this contract can determine the highest bid.
-    function addReveal(bytes32 salt, uint256 amount)
+    function reveal(bytes32 salt, uint256 amount, bytes signature)
       public
     {
       // Revealing a commitment to a previous bid requires the sender
-      // to provide their salt and the actual bid amount. It should not
-      // already be revealed
+      // to provide their salt and the actual bid amount.
+      bytes32 hashed = keccak256(abi.encodePacked(amount, salt));
+      address sender = ecr(hashed, signature);
       require(
-          bidders[msg.sender].revealed == false,
-            "INVALID_REVEAL_UNIQUENESS"
-      );
-      require(
-          bidders[msg.sender].bid == keccak256(abi.encodePacked(amount, salt)),
+          bidders[sender].bid == hashed,
             "INVALID_REVEAL"
       );
       ////TODO requires for auction state
-      bidders[msg.sender].revealed = true;
-      bidders[msg.sender].amount = amount;
+      bidders[sender].revealed = true;
+      bidders[sender].amount = amount;
       ////
-      if (bidders[msg.sender].amount > highestBid) {
-        highestBid = bidders[msg.sender].amount;
-        highestBidder = msg.sender;
+      if (bidders[sender].amount > highestBid) {
+        highestBid = bidders[sender].amount;
+        highestBidder = sender;
       }
       revealCount++;
     }
@@ -149,6 +155,11 @@ contract FPSBAuction is
         require(
             bidders[msg.sender].bid == keccak256(abi.encodePacked(buyOrder.makerAssetAmount, bidderDetails.salt)),
             "INVALID_BIDDER"
+        );
+        // Ensure all reveals are in
+        require(
+            commitCount == revealCount,
+            "INVALID_REVEAL_PHASE"
         );
         // Finally, validate that this is the highest bid
         require(
