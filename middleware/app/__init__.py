@@ -27,17 +27,15 @@ abi = datastore["abi"]
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
 
-    address = w3.toChecksumAddress('0x0a45e1ac0f4d00adf66b292da76ae23f3c0e06cc') #TODO will not be hardcoded
+    address = w3.toChecksumAddress('0xb757bf14aa8d752f85ff65c572e4c7c0b380cd15') #TODO will not be hardcoded
     auction = w3.eth.contract(address=address, abi=abi)
 
-    salt = "dont_touch_my_salt"
-    bid = "1"
-    bidBytes = w3.toBytes(text=bid);
-    saltBytes = w3.toBytes(text=salt);
+    bid = request.form['bid']
+    salt = request.form['salt']
+    msgHash = w3.soliditySha3(['bytes32','bytes32'], [bytes(bid.encode()), bytes(salt.encode())])
 
-    msgHash = w3.soliditySha3(['bytes32','bytes32'], [bidBytes, saltBytes]);
+    print(w3.toHex(msgHash));
 
-    print(w3.toHex(msgHash))
     sig = request.form['signature']
 
     ecrec = auction.functions.commit(msgHash, sig).call()
@@ -49,20 +47,17 @@ def auctionCommit():
 @app.route("/auction/reveal", methods=['POST'])
 def auctionReveal():
 
-    address = w3.toChecksumAddress('0x0a45e1ac0f4d00adf66b292da76ae23f3c0e06cc')
+    address = w3.toChecksumAddress('0xb757bf14aa8d752f85ff65c572e4c7c0b380cd15')
     auction = w3.eth.contract(address=address, abi=abi)
 
-    salt = "dont_touch_my_salt"
-    bid = "1"
-    bidBytes = w3.toBytes(text=bid);
-    saltBytes = w3.toBytes(text=salt);
+    bid = request.form['bid']
+    salt = request.form['salt']
+    sig = request.form['signature'].encode()
 
-    sig = request.form['signature']
-
-    ecrec = auction.functions.reveal(saltBytes, bidBytes, sig).call()
+    ecrec = auction.functions.reveal(salt, bid, sig).call()
     ecrecHex = w3.toHex(ecrec)
 
-    return jsonify({"response": ""}), 200
+    return jsonify({"response": ecrecHex}), 200
 
 
 

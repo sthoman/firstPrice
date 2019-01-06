@@ -44,9 +44,9 @@ contract FPSBAuction is
     }
 
     struct BidderDetails {
+        uint256 amount;
         uint256 salt;
         bytes32 bid;
-        bytes32 amount;
         bool revealed;
         bool committed;
     }
@@ -57,7 +57,7 @@ contract FPSBAuction is
     // highest bid
     uint256 commitCount;
     uint256 revealCount;
-    bytes32 highestBid;
+    uint256 highestBid;
     address highestBidder;
 
     // bidders
@@ -86,7 +86,7 @@ contract FPSBAuction is
     //  require(
     //        bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
     //  );
-      bidders[senderAddress] = BidderDetails(0, bid, 0, false, true);
+      bidders[senderAddress] = BidderDetails(0, 0, bid, false, true);
     //  commitCount++;
     //  return senderAddress;
     }
@@ -95,28 +95,28 @@ contract FPSBAuction is
     // amount after the auction is closed. This is analogous to opening
     // a sealed envelope containing each bidders' bid amount. When the
     // auction is over this contract can determine the highest bid.
-    function reveal(bytes32 salt, bytes32 amount, bytes signature)
+    function reveal(string salt, string amount, bytes signature)
       public
-    //  returns (bytes32)
+      returns (bytes32)
     {
       // Revealing a commitment to a previous bid requires the sender
       // to provide their salt and the actual bid amount.
       bytes32 hashed = keccak256(abi.encodePacked(amount, salt));
       address sender = ecr(hashed, signature);
-      require(
-          bidders[sender].bid == hashed,
-            "INVALID_REVEAL"
-      );
-      //TODO requires for auction state
-      bidders[sender].revealed = true;
-      bidders[sender].amount = amount;
+    //  require(
+    //      bidders[sender].bid == hashed,
+    //        "INVALID_REVEAL"
+    //  );
+      //TODO requires for auction state, also sender amount should not be string ultimately
+    //  bidders[sender].revealed = true;
+    //  bidders[sender].amount = amount;
       //
-      if (bidders[sender].amount > highestBid) {
-        highestBid = bidders[sender].amount;
-        highestBidder = sender;
-      }
+    //  if (bidders[sender].amount > highestBid) {
+    //    highestBid = bidders[sender].amount;
+    //    highestBidder = sender;
+    //  }
       revealCount++;
-    //  return hashed;
+      return hashed;
     }
 
     /// @dev Matches the buy and sell orders at an amount given the rules of the auction
