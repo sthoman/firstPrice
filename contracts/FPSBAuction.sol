@@ -81,7 +81,7 @@ contract FPSBAuction is
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during the reveal phase by ecrecover.
-    function commit(bytes32 bid, bytes signature)
+    function commit(bytes32 bid, bytes memory signature)
       public
     {
       address senderAddress = ecr(bid, signature);
@@ -99,7 +99,7 @@ contract FPSBAuction is
     // amount after the auction is closed. This is analogous to opening
     // a sealed envelope containing each bidders' bid amount. When the
     // auction is over this contract can determine the highest bid.
-    function reveal(uint256 amount, string salt, bytes signature)
+    function reveal(uint256 amount, string salt, bytes memory signature)
       public
     {
       // Revealing a commitment to a previous bid requires the sender
