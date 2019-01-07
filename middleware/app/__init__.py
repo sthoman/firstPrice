@@ -6,6 +6,8 @@ from marshmallow import Schema, fields, ValidationError
 from web3 import Web3
 from eth_account.messages import defunct_hash_message
 from sha3 import keccak_256
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 
 class BidSchema(Schema):
     bid = fields.String(required=True)
@@ -39,12 +41,18 @@ def getLatestContractAddress():
 
 
 
+# set pre-funded account as sender
+w3.eth.defaultAccount = w3.eth.accounts[0]
+
+# kafka
+commitTopic = 'firstPrice-commit'
+revealTopic = 'firstPrice-reveal'
+
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
-    # set pre-funded account as sender
-    w3.eth.defaultAccount = w3.eth.accounts[0]
 
     # TODO don't need to do this every time but this makes testing more convenient with frequent re-deployments
+    '''
     address_h = getLatestContractAddress()
     address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
@@ -59,6 +67,13 @@ def auctionCommit():
 
     tx_hash = auction.functions.commit(hash, sig).transact()
     tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    '''
+
+    requestJson = request.get_json()
+
+    producerCommit = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda m: json.dumps(m).encode('utf-8'))
+    producerCommit.send(commitTopic, requestJson)
+    producerCommit.flush()
 
     return jsonify({"response": ""}), 200
 
@@ -67,6 +82,7 @@ def auctionCommit():
 @app.route("/auction/reveal", methods=['POST'])
 def auctionReveal():
 
+    '''
     address_h = getLatestContractAddress()
     address = w3.toChecksumAddress(address_h)
     auction = w3.eth.contract(address=address, abi=abi)
@@ -77,15 +93,20 @@ def auctionReveal():
 
     tx_hash = auction.functions.reveal(bid, salt, sig).transact()
     tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    '''
+
+    requestJson = request.get_json()
+
+    producerReveal = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda m: json.dumps(m).encode('utf-8'))
+    producerReveal.send(revealTopic, requestJson)
+    producerReveal.flush()
 
     return jsonify({"response": ""}), 200
 
 
 
-@app.route("/auction/commit-test", methods=['POST'])
+@app.route("/auction/getPublicKey", methods=['POST'])
 def auctionCommitTest():
-
-    w3.eth.defaultAccount = w3.eth.accounts[1]
 
     address = w3.toChecksumAddress(request.form['address'])
     auction = w3.eth.contract(
