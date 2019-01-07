@@ -36,8 +36,8 @@ contract FPSBAuction is
     using LibBytes for bytes;
 
     struct AuctionDetails {
-        uint256 beginCommitPhaseSeconds;
-        uint256 beginRevealPhaseSeconds;
+        uint256 beginCommitTimeSeconds;
+        uint256 beginRevealTimeSeconds;
         uint256 currentTimeSeconds;
         uint256 reservePrice;
     }
@@ -68,13 +68,6 @@ contract FPSBAuction is
         public
     {
         EXCHANGE = IExchange(address(0)); ////TODO temporary workaround
-    }
-
-    //
-    //
-    function getBidderDetails(address bidder) public view returns (bytes32) {
-      return
-        bidders[bidder].bid;
     }
 
     // Add a commitment, also known as a bid in this auction. Each bid
@@ -140,14 +133,14 @@ contract FPSBAuction is
 
         // Ensure the auction has started
         require(
-            auctionDetails.currentTimeSeconds >= auctionDetails.beginTimeSeconds,
+            auctionDetails.currentTimeSeconds >= auctionDetails.beginRevealTimeSeconds,
             "AUCTION_NOT_STARTED"
         );
-        // Ensure the auction has not expired. This will fail later in 0x but we can save gas by failing early
-        require(
-            sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds,
-            "AUCTION_EXPIRED"
-        );
+        // required??
+        //require(
+        //    sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds,
+        //    "AUCTION_EXPIRED"
+        //);
         // Validate the buyer amount is greater than the reserve price
         require(
             buyOrder.makerAssetAmount >= auctionDetails.reservePrice,
@@ -217,20 +210,12 @@ contract FPSBAuction is
             makerAssetDataLength >= 100,
             "INVALID_ASSET_DATA"
         );
-        uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 64);
+        uint256 auctionBeginCommitTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 64);
         uint256 auctionBeginRevealTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 32);
 
-        // Ensure the auction has a valid begin time
+        // Ensure the auction reveal time is greater than commit time
         require(
-            order.expirationTimeSeconds > auctionBeginTimeSeconds,
-            "INVALID_BEGIN_TIME"
-        );
-        require(
-            order.expirationTimeSeconds > auctionBeginRevealTimeSeconds,
-            "INVALID_BEGIN_REVEAL_TIME"
-        );
-        require(
-            auctionBeginRevealTimeSeconds > auctionBeginTimeSeconds,
+            auctionBeginRevealTimeSeconds > auctionBeginCommitTimeSeconds,
             "REVEAL_TIME_MUST_BE_GREATER"
         );
 
@@ -239,9 +224,8 @@ contract FPSBAuction is
 
         // solhint-disable-next-line not-rely-on-time
         uint256 timestamp = block.timestamp;
-        auctionDetails.beginTimeSeconds = auctionBeginTimeSeconds;
+        auctionDetails.beginCommitTimeSeconds = auctionBeginCommitTimeSeconds;
         auctionDetails.beginRevealTimeSeconds = auctionBeginRevealTimeSeconds;
-        auctionDetails.endTimeSeconds = order.expirationTimeSeconds;
         auctionDetails.currentTimeSeconds = timestamp;
         auctionDetails.reservePrice = reservePrice;
 
