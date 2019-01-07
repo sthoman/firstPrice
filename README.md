@@ -3,21 +3,22 @@ first price sealed bid auctions on the ethereum blockchain
 
 see research.txt for notes
 
-requirements,
+High level reqs,
 
-ganache-cli or other RPC node of choice, running on localhost port 8545 for debugging
+ganache-cli
+
 python v3.7
+
 solc v0.4.24
 
 specific Solidity version installed globally via HomeBrew,
 
 brew unlink solidity
+
 brew install https://raw.githubusercontent.com/ethereum/homebrew-ethereum/9599ce8371d9de039988f89ed577460e58a0f56a/solidity.rb
 
 For truffle deployments,
 
-npm install
-npm run compile
 npm run deploy
 
 For the middleware, this npm command is dependent on python and starts the middleware,
