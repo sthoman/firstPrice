@@ -36,9 +36,8 @@ contract FPSBAuction is
     using LibBytes for bytes;
 
     struct AuctionDetails {
-        uint256 beginTimeSeconds;
-        uint256 endTimeSeconds;
-        uint256 beginRevealTimeSeconds;
+        uint256 beginCommitPhaseSeconds;
+        uint256 beginRevealPhaseSeconds;
         uint256 currentTimeSeconds;
         uint256 reservePrice;
     }

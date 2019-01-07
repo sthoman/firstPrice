@@ -25,6 +25,7 @@ import "./ECRecover.sol";
 //
 contract SealedAuction is ECRecover
 {
+  
   struct BidderDetails {
       uint256 amount;
       uint256 salt;
