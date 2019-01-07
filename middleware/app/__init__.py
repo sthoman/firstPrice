@@ -10,37 +10,7 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
 
-
 app = Flask(__name__)
-
-
-
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
-
-dir = os.path.dirname(__file__)
-path = os.path.join(dir, 'contracts/FPSBAuction.json')
-
-with open(path, 'r') as f:
-    datastore = json.load(f)
-abi = datastore["abi"]
-
-def getLatestContractAddress():
-    with open(path, 'r') as f:
-        datastoreLocal = json.load(f)
-    abi = datastoreLocal["abi"]
-
-    networks = datastoreLocal["networks"]
-    address_h = ''
-
-    for n in networks:
-        address_h = networks[n]['address'];
-
-    return address_h;
-
-
-
-# set pre-funded account as sender
-w3.eth.defaultAccount = w3.eth.accounts[0]
 
 # kafka
 commitTopic = 'firstPrice-commit'
@@ -65,7 +35,7 @@ def auctionReveal():
     return jsonify({"response": ""}), 200
 
 
-
+'''
 @app.route("/auction/getPublicKey", methods=['POST'])
 def auctionCommitTest():
 
@@ -87,3 +57,4 @@ def auctionCommitTest():
     ).call()
 
     return jsonify({"address": recovered_address}), 200
+'''
