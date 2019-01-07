@@ -39,12 +39,6 @@ consumerCommitTopic = KafkaConsumer(
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
         )
-consumerRevealTopic = KafkaConsumer(
-            'firstPrice-reveal',
-            bootstrap_servers='localhost:9092',
-            value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-            auto_offset_reset='earliest',
-        )
 
 
 
@@ -62,18 +56,6 @@ def consumerCommit(kafkMessage):
     tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     print(tx_receipt)
 
-def consumerReveal(kafkMessage):
-    address_h = getLatestContractAddress()
-    address = w3.toChecksumAddress(address_h)
-    auction = w3.eth.contract(address=address, abi=abi)
-
-    sig = kafkMessage.value['signature']
-    bid = int(kafkMessage.value['bid'])
-    salt = kafkMessage.value['salt']
-
-    tx_hash = auction.functions.reveal(bid, salt, sig).transact()
-    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-    print(tx_receipt)
 
 
 
@@ -81,6 +63,3 @@ def consumerReveal(kafkMessage):
 # on chain could add validation
 for msg in consumerCommitTopic:
     consumerCommit(msg)
-
-for msg in consumerRevealTopic:
-    consumerReveal(msg)
