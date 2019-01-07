@@ -11,7 +11,10 @@
     "console": "./node_modules/.bin/truffle console --network bridge",
     "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge",
     "middleware": "mkdir -p middleware/app/contracts/ && cp -R build/contracts/*.* middleware/app/contracts/ && cd middleware && flask run",
-    "venv": "source middleware/venv/bin/activate"
+    "venv": "source middleware/venv/bin/activate",
+    "kafka-zookeeper": "/usr/local/bin/zookeeper-server-start -daemon /usr/local/etc/kafka/zookeeper.properties",
+    "kafka-server": "/usr/local/bin/kafka-server-start -daemon /usr/local/etc/kafka/server.properties",
+    "kafka-topics": "/usr/local/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test2"
   },
   "repository": {
     "type": "git",
