@@ -2,3 +2,5 @@ node_modules/
 build/
 middleware/venv/
 middleware/app/contracts/
+middleware/__pycache__/
+middleware/app/__pycache__/
