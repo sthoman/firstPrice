@@ -29,3 +29,7 @@ the middleware is a python flask server, requires venv and solc v0.4.24
 see /middleware/app/__init__.py for the flask routes which utilize the ECRecover scheme
 
 must run truffle deployment before starting middleware
+
+for Kafka,
+
+https://medium.com/@Ankitthakur/apache-kafka-installation-on-mac-using-homebrew-a367cdefd273
