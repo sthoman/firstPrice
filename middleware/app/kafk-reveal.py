@@ -10,6 +10,11 @@ from eth import getLatestContract
 
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
+delegate_account = w3.eth.account.create('the quick brown fox jumps over the lazy programmer')
+delegate_private_key = tx_account.privateKey;
+
+w3.eth.defaultAccount = delegate_account
+
 
 consumerRevealTopic = KafkaConsumer(
             'firstPrice-reveal',
@@ -18,6 +23,7 @@ consumerRevealTopic = KafkaConsumer(
             auto_offset_reset='earliest',
         )
 
+# TODO consider encrypted reveals?
 def consumerReveal(kafkMessage):
     auction = getLatestContract()
     sig = kafkMessage.value['signature']

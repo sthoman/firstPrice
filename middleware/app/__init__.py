@@ -35,8 +35,10 @@ def auctionReveal():
     return jsonify({"response": ""}), 200
 
 
+
+
 '''
-@app.route("/auction/getPublicKey", methods=['POST'])
+@app.route("/auction/init", methods=['POST'])
 def auctionCommitTest():
 
     address = w3.toChecksumAddress(request.form['address'])
@@ -44,12 +46,14 @@ def auctionCommitTest():
         address=address, abi=abi,
     )
 
-    tx_account = w3.eth.account.create('commit test account now')
-    tx_private_key = tx_account.privateKey;
+    delegate_account = w3.eth.account.create('the quick brown fox jumps over the lazy programmer')
+    delegate_private_key = tx_account.privateKey;
+
     msg = request.form['bid']
     msgHash = defunct_hash_message(text=msg)
 
-    tx_sig = w3.eth.account.signHash(msgHash, private_key=tx_private_key)
+    delegate_sig = w3.eth.account.signHash(msgHash, private_key=delegate_private_key)
+
     print(w3.toHex(tx_sig['signature']));
 
     recovered_address = auction.functions.commit(
