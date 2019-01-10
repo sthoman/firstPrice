@@ -44,6 +44,12 @@ between participants. They may be useful in price discovery for difficult to pri
 decentralized finance will usher in new types of previously unimagined digital assets, it seems natural
 that effective and fair price discovery for both buyers and sellers would be a worthy area of research.
 
+There is also a tradition of using sealed auctions in energy contracts, or in general for procurement of 
+public goods in traditional markets. Other auction formats including dutch auctions are used by the US 
+treasury to price and sell their bonds. It would be generally interesting to explore the game theoretic
+characteristics of various auction formats, including completely novel ones, that might help to coordinate 
+the efficient allocation of natural resources or incentivize renewable energy contracts. 
+
 III. State Channels
 
 The commitment scheme described in (I) can be modified to use ecrecover so that only signed transactions
