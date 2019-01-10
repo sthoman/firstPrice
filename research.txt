@@ -112,6 +112,7 @@ potentially.
 
 IX. Other Literature and Context
 
+https://math.stackexchange.com/questions/1173548/nash-equilibrium-in-first-price-auction
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
 https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
