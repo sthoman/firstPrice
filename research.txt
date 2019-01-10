@@ -3,90 +3,114 @@ General Notes and Project Research - Lighthouse Labs' October 2018 Blockchain Co
 I. First Price Sealed Bid Auction
 
 First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
-sealed bids for some asset within a time frame as long as the bid is above a reserve price for that 
-asset. Bids are private and hidden from all the participants. It is analogous to collecting bids in 
+sealed bids for some asset within a time frame as long as the bid is above a reserve price for that
+asset. Bids are private and hidden from all the participants. It is analogous to collecting bids in
 a sealed envelope, and waiting until after the auction is over to open each envelope and determine
-the highest bidder. 
+the highest bidder.
 
-The simplest version of the auction contract will use a commitment scheme where N market participants 
-submit a hash of their bid amount during the commitment phase of the auction. The commitment phase of 
-the auction will have a publicly defined start and end time. Once the commitment phase end time is 
-reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end 
-time that must be greater than the commitment phase end time. During the reveal phase market participants 
-shall submit their true bid amounts and cryptographic salt to a reveal() function. The reveal() function 
-will hash the true bid amount from each participant using their own unique salt value, and check if this 
-hash is equivalent to the hash submitted by that same participant during the commitment phase of the auction.
-It is vitally important that participants' salt values remain secret prior to the reveal phase of the auction. 
+The simplest version of the auction contract will use a commitment scheme where N market participants
+submit a hash of their bid amount during the commitment phase of the auction. The commitment phase of
+the auction will have a publicly defined start and end time. Once the commitment phase end time is
+reached, the auction will enter a reveal phase. The reveal phase will also have a publicly defined end
+time that must be greater than the commitment phase end time. During the reveal phase market participants
+shall submit their true bid amounts and cryptographic salt to a reveal() function. The reveal() function
+will hash the true bid amount from each participant using their own unique salt value, and check if this
+hash is equivalent to the hash submitted by that same participant during the commitment phase of the
+auction. It is vitally important that participants' salt values remain secret prior to the reveal phase
+of the auction.
 
-If the resultant hashes match, the bid is valid. The contract will track the highest bid as the reveal() 
+If the resultant hashes match, the bid is valid. The contract will track the highest bid as the reveal()
 function is called by each participant during the reveal phase. Once all reveals are complete, the highest
-bidder can be determined on chain and an order can be signed and filled to complete the transaction. 
+bidder can be determined on chain and an order can be signed and filled to complete the transaction.
 
-It will be necessary to determine how to properly incentivize honest actors and ensure all bidders 
-submit during the reveal phase. The intention of the protocol is to ensure participants cannot collude 
-with each other regarding bidding and also are not influenced by knowledge of each others' bids until 
-after the auction enters the reveal phase (where bids can no longer be submitted). The purpose would 
-be to determine the highest possible fair market price for the auctioned asset. It will also be  
-necessary to determine a solution for ties. 
+It will be necessary to determine how to properly incentivize honest actors and ensure all bidders
+submit during the reveal phase. The intention of the protocol is to ensure participants cannot collude
+with each other regarding bidding and also are not influenced by knowledge of each others' bids until
+after the auction enters the reveal phase (where bids can no longer be submitted). The purpose would
+be to determine the highest possible fair market price for the auctioned asset. It will also be necessary
+to determine a solution for ties.
 
-II. State Channels 
+II. Strategy
+
+First price sealed bid auctions are strategically similar to Dutch auctions where the selling price of
+an asset is reduced until a buyer is found. There are also Vickrey auctions, or second price sealed bid
+auctions where the asset goes to the second highest bidder instead. The motivation for this approach is
+to mitigate a 'winners curse'. The winners curse hypothesis states that the winner of a first price sealed
+bid auction, in which the value of the asset being auctioned is uncertain, tends to be the one who most
+overestimates the value of the auctioned object.
+
+Sealed auctions are, generally speaking, games of incomplete information with possible Nash equilibria
+between participants. They may be useful in price discovery for difficult to price goods or services. If
+decentralized finance will usher in new types of previously unimagined digital assets, it seems natural
+that effective and fair price discovery for both buyers and sellers would be a worthy area of research.
+
+III. State Channels
 
 The commitment scheme described in (I) can be modified to use ecrecover so that only signed transactions
 may be sent to the auction contract, without requiring the account owner to send transactions from their
 own account. Signed commitments (bids) could be sent on behalf of an account owner through state channel
-middleware. 
+middleware.
 
 The auction contract can use ecrecover to retrieve a bidders' ethereum address using their hashed bid
 amount and signature when calling either commit() or reveal(). Signed bid commitments and bid reveals
-could be queued in a centralized message queue of immutable off-chain representations of on-chain eth
-transactions. 
+could be queued in a centralized message queue of immutable off-chain representations of each on-chain
+ethereum transaction.
 
-This would create a point of centralization in the architecture, however, as a naive queueing service 
-the middleware could be scaled and/or decentralized in a variety of ways. 
+This would create a point of centralization in the architecture, however, as a naive queueing service
+the middleware could be scaled and/or decentralized in a variety of ways. Exploring the use of Apache
+Kafka in Python as a high-performance stream of immutable transactions that could be submitted to the
+blockchain at any time, depending on overall architecture and system requirements.
 
-III. Escrow of Funds
+IV. Escrow of Funds
 
-Each participant that commits to a bid during the commitment phase shall also be required to escrow a 
-certain amount of funds for the duration of the auction. This is to give the seller assurance that the 
-bidder can cover their bid in the event they win the auction. This needs to be investigated more. 
+Each participant that commits to a bid during the commitment phase shall also be required to escrow a
+certain amount of funds for the duration of the auction. This could be to give the seller assurance that
+the bidder can cover their bid in the event they win the auction. This needs to be investigated more. This
+escrow amount should probably be calibrated to incentivize honest behavior without incurring too much cost
+to defectors. I am not sure it is necessary to require the entire reserve price in escrow, for example,
+from all the bidders.
 
-IV. Griefing 
+V. Griefing
 
 Need to solve a potential griefing problem where bidders, during the reveal phase, could witness others'
 revealed bid amounts and choose not to reveal. The auction will not execute any trade unless all bidders
 call the reveal() function, however an individual bidder could still attempt to sabotage the auction. It
-is a problem that at least applies to the simplest implementation of the auction contract. 
+is a problem that at least applies to the simplest implementation of the auction contract. Finding a way
+to either encrypt the reveals until they can be exposed in a synchronized manner, or some other mechanism
+of synchronization, may be necessary.
 
-V. Zero Knowledge Proofs
+VI. Zero Knowledge Proofs
 
 https://blog.gnosis.pm/getting-started-with-zksnarks-zokrates-61e4f8e66bcc
 
 Will explore zero knowledge proofs as a way to prove the owner of the highest, winning bid, without
 necessarily revealing all bid amounts or bidders' identifying information. If ZKPs could be used to
-facilitate some basic KYC rules that would be of interest too. For instance, zero knowledge range 
-proofs can prove that an end users' current jurisdiction is within some range without necessarily 
-revealing the jurisdiction itself or other identifying information about the end user. 
+facilitate some basic KYC rules that would be of interest too. For instance, zero knowledge range
+proofs can prove that an end users' current jurisdiction is within some range without necessarily
+revealing the jurisdiction itself or other identifying information about the end user.
 
-VI. Secure Multi-party Computation
+VII. Secure Multi-party Computation
 
-Multiple parties need to agree on a highest bid without necessarily revealing any of the bids to all 
-parties. It might be possible to exploit homomorphic properties of encrypted values to determine the
-highest bid on chain, without revealing them. This would be something interesting to research. 
+Multiple parties need to agree on a winning bid without necessarily revealing any of the bids to all
+parties, at least until the auction results are ready to be exposed to the public. It might be possible
+to exploit homomorphic properties of encrypted values to determine the highest bid on chain, without
+revealing them. This would be something interesting to research.
 
-For a minimum solution this may be overkill. In general the problem to solve is a problem of revealing 
-a highest bid to all participants without revealing every bid. This wikipedia article discusses a case 
-where a group of participants determine the highest salary amongst them, 
+For a minimum solution this may be overkill. In general the problem to solve is a problem of revealing
+a winning bid to all participants without revealing every bid. This wikipedia article discusses a case
+where a group of individuals use MPC determine the highest salary amongst them, for instance,
 
 https://en.wikipedia.org/wiki/Secure_multi-party_computation
 
-VII. 0x Protocol
+VIII. 0x Protocol
 
-Researching possible use of the 0x protocol to facilitate the auction. Overall gas fees should be 
-minimized if possible. Having to record every commit and reveal on chain is not necessarily ideal
-but may be fine for the minimum solution. By using 0x this auction commit-reveal scheme can be used
-for a variety of crypto assets, potentially. 
+Researching possible use of the 0x protocol to facilitate the auction. Overall gas fees should be
+minimized and off chain transactions as well as signing mechanisms should be explored. Having to record
+every commit and reveal on chain is not necessarily ideal but may be fine for the minimum solution. By
+using 0x this auction commit-reveal scheme could be leveraged for a variety of digital transactions,
+potentially.
 
-VIII. Other Literature and Context
+IX. Other Literature and Context
 
 http://iqua.ece.toronto.edu/~bli/ece1771f/lectures/Episode%208.pdf
 https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
