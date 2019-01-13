@@ -35,8 +35,6 @@ def auctionReveal():
     return jsonify({"response": ""}), 200
 
 
-
-
 '''
 @app.route("/auction/init", methods=['POST'])
 def auctionCommitTest():
