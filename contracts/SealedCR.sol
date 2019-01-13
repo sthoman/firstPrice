@@ -38,7 +38,7 @@ contract SealedCR is ECRecover, Ownable
         address revealAddr;       // the address of the bid revealer, should match
         bytes32 revealHash;       // the hash from the reveal operation
         uint256 revealAmount;     // the clear bid value
-    //    bytes commitSignature;    // signature of the bid sender
+        bytes commitSignature;    // signature of the bid sender
     }
 
     // mapping of commit hash to bid object
@@ -48,17 +48,16 @@ contract SealedCR is ECRecover, Ownable
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during a challenge by ecrecover.
     //
-    function commit(bytes32 commitHash, bytes memory signature)
+    function commit(bytes32 commitHash, bytes memory signature, address auctionContract)
       public
       //onlyOwner()
     {
-    //  address senderAddress = ecr(commitHash, signature);
-    //  require(
-    //        senderAddress != address(0),
-    //          "ECRECOVER_FAILED"
-    //  );
-    //  bids[commitHash] = Bid(auctionContract, senderAddress, address(0), 0, 0, signature);
-      bids[commitHash] = Bid(address(0), address(0), address(0), 0, 0);
+      address senderAddress = ecr(commitHash, signature);
+      require(
+            senderAddress != address(0),
+              "ECRECOVER_FAILED"
+      );
+      bids[commitHash] = Bid(auctionContract, senderAddress, address(0), 0, 0, signature);
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
@@ -91,13 +90,13 @@ contract SealedCR is ECRecover, Ownable
     function challenge(uint256 revealAmount, string salt, bytes memory signature)
       public
     {
-    //  bytes32 commitSignature = signature;
+  //    bytes32 commitSignature = signature;
       bytes32 revealHash = keccak256(abi.encodePacked(revealAmount, salt));
       address revealAddress = ecr(revealHash, signature);
-    //  require(
-    //      bids[revealHash].commitSignature == commitSignature,
-    //        "CHALLENGE_FAILED_BAD_SIGNATURE"
-    //  );
+  //    require(
+  //        bids[revealHash].commitSignature == commitSignature,
+  //          "CHALLENGE_FAILED_BAD_SIGNATURE"
+  //    );
       require(
           bids[revealHash].senderAddr != revealAddress,
             "CHALLENGE_FAILED"

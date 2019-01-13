@@ -8,13 +8,14 @@ from sha3 import keccak_256
 from eth import getLatestAuctionContract, getLatestCommitContract
 
 
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 
 delegate_account = w3.eth.account.create('the quick brown fox jumps over the lazy programmer')
 delegate_private_key = delegate_account.privateKey
 
-w3.eth.defaultAccount = delegate_account
+w3.eth.defaultAccount = w3.eth.accounts[0]
 
+#w3.personal.unlockAccount(account,"password",15000); // unlock for a long time
 
 consumerCommitTopic = KafkaConsumer(
             'firstPrice-commit',
@@ -38,12 +39,12 @@ def consumerCommit(kafkMessage):
     addr = auction.address
 
     sig = w3.eth.account.signHash(hash, private_key=delegate_private_key)
-    sign = w3.toBytes(sig['signature'])
+    sign = sig['signature']
     print(sign)
     print(hash)
     print(commitcontract.address)
 
-    tx_hash = commitcontract.functions.commit(hash, sign).transact()
+    tx_hash = commitcontract.functions.commit(hash, sign, addr).transact()
     tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     print('tx_receipt=')
     print(tx_receipt)

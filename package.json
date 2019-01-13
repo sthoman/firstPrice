@@ -9,7 +9,7 @@
   "scripts": {
     "compile": "./node_modules/.bin/truffle compile",
     "console": "./node_modules/.bin/truffle console --network bridge",
-    "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge",
+    "deploy": "./node_modules/.bin/truffle deploy --reset --network ganache",
     "middleware": "mkdir -p middleware/app/contracts/ && cp -R build/contracts/*.* middleware/app/contracts/ && cd middleware && flask run",
     "venv": "source middleware/venv/bin/activate",
     "kafka-zookeeper": "/usr/local/bin/zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties",
