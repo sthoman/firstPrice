@@ -8,13 +8,25 @@ from eth_account.messages import defunct_hash_message
 from sha3 import keccak_256
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # kafka
 commitTopic = 'firstPrice-commit'
 revealTopic = 'firstPrice-reveal'
+
+@app.route("/auction/abi", methods=['GET'])
+def getContractAbi():
+    dir = os.path.dirname(__file__)
+    path = os.path.join(dir, 'contracts/SealedCR.json')
+
+    with open(path, 'r') as f:
+        datastore = json.load(f)
+    abi = datastore["abi"]
+
+    return jsonify({"response": abi}), 200
 
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():

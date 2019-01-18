@@ -9,9 +9,10 @@
   "scripts": {
     "compile": "./node_modules/.bin/truffle compile",
     "console": "./node_modules/.bin/truffle console --network bridge",
-    "deploy": "./node_modules/.bin/truffle deploy --reset --network ganache",
+    "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge",
     "middleware": "mkdir -p middleware/app/contracts/ && cp -R build/contracts/*.* middleware/app/contracts/ && cd middleware && flask run",
     "venv": "source middleware/venv/bin/activate",
+    "venv-build": "venv/bin/pip3 install -r requirements_3_7.txt && venv/bin/pip install -r requirements_2_7.txt",
     "kafka-zookeeper": "/usr/local/bin/zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties",
     "kafka-server": "/usr/local/bin/kafka-server-start /usr/local/etc/kafka/server.properties",
     "kafka-topics-commit": "/usr/local/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic firstPrice-commit",

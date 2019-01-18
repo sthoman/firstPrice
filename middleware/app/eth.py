@@ -2,7 +2,7 @@ import json
 import os
 from web3 import Web3
 
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
 dir = os.path.dirname(__file__)
 path = os.path.join(dir, 'contracts/FPSBAuction.json')

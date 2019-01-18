@@ -12,7 +12,12 @@ export default {
     MyCarousel
   },
   mounted(){
+    /*
+    this.$axios
+      .get('http://127.0.0.1:5000/auction/abi')
+      .then(response => (this.info = response))
     console.log('hello from App')
+    console.log(this.info)*/
   }
 }
 </script>

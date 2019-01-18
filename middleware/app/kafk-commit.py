@@ -8,7 +8,7 @@ from sha3 import keccak_256
 from eth import getLatestAuctionContract, getLatestCommitContract
 
 
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
 delegate_account = w3.eth.account.create('the quick brown fox jumps over the lazy programmer')
 delegate_private_key = delegate_account.privateKey

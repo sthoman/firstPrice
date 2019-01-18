@@ -34,8 +34,9 @@ contract SealedCR is ECRecover, Ownable
     //
     struct Bid {
         address auctionContract;  // the auction contract this bid is for
-        address senderAddr;       // the address of the bid sender
-        address revealAddr;       // the address of the bid revealer, should match
+        address signerAddr;       // the signing address of the bid sender, for state channel
+        address bidderAddr;       // the transactional address of the bid sender
+        address revealAddr;       // the address of the bid revealer, should match the signer
         bytes32 revealHash;       // the hash from the reveal operation
         uint256 revealAmount;     // the clear bid value
         bytes commitSignature;    // signature of the bid sender
@@ -44,20 +45,24 @@ contract SealedCR is ECRecover, Ownable
     // mapping of commit hash to bid object
     mapping(bytes32 => Bid) public bids;
 
+    //
+    event Reveal(address bidderAddress, uint256 amount);
+
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during a challenge by ecrecover.
     //
     function commit(bytes32 commitHash, bytes memory signature, address auctionContract)
-      public
+      public returns (address)
       //onlyOwner()
     {
-      address senderAddress = ecr(commitHash, signature);
+      address signerAddress = ecr(commitHash, signature);
       require(
-            senderAddress != address(0),
+            signerAddress != address(0),
               "ECRECOVER_FAILED"
       );
-      bids[commitHash] = Bid(auctionContract, senderAddress, address(0), 0, 0, signature);
+      bids[commitHash] = Bid(auctionContract, signerAddress, address(0), address(0), 0, 0, signature);
+      return signerAddress;
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid
@@ -71,11 +76,14 @@ contract SealedCR is ECRecover, Ownable
       // to provide their random salt and the actual bid amount.
       bytes32 revealHash = keccak256(abi.encodePacked(revealAmount, salt));
       require(
-          bids[revealHash].senderAddr != address(0),
+          bids[revealHash].signerAddr != address(0),
             "REVEAL_HASH_FAILED"
       );
       bids[revealHash].revealHash = revealHash;
       bids[revealHash].revealAmount = revealAmount;
+      // Reveal the sender & what they revealed, to anyone who needs
+      // to examine the real price.
+      emit Reveal(bids[revealHash].signerAddr, revealAmount);
     }
 
     // Since reveal() gave this contract the true bid amounts, now any
@@ -98,7 +106,7 @@ contract SealedCR is ECRecover, Ownable
   //          "CHALLENGE_FAILED_BAD_SIGNATURE"
   //    );
       require(
-          bids[revealHash].senderAddr != revealAddress,
+          bids[revealHash].signerAddr != revealAddress,
             "CHALLENGE_FAILED"
       );
       bids[revealHash].revealAddr = revealAddress;
