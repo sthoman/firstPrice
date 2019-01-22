@@ -12,8 +12,9 @@
     "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge",
     "middleware": "mkdir -p middleware/app/contracts/ && cp -R build/contracts/*.* middleware/app/contracts/ && cd middleware && flask run",
     "venv": "source middleware/venv/bin/activate",
-    "kafka-zookeeper": "/usr/local/bin/zookeeper-server-start -daemon /usr/local/etc/kafka/zookeeper.properties",
-    "kafka-server": "/usr/local/bin/kafka-server-start -daemon /usr/local/etc/kafka/server.properties",
+    "venv-build": "venv/bin/pip3 install -r requirements_3_7.txt && venv/bin/pip install -r requirements_2_7.txt",
+    "kafka-zookeeper": "/usr/local/bin/zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties",
+    "kafka-server": "/usr/local/bin/kafka-server-start /usr/local/etc/kafka/server.properties",
     "kafka-topics-commit": "/usr/local/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic firstPrice-commit",
     "kafka-topics-reveal": "/usr/local/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic firstPrice-reveal"
   },
@@ -31,6 +32,7 @@
     "@0x/contracts-protocol": "^2.1.59",
     "eth-hd-wallet": "^0.4.0",
     "solc": "0.4.24",
-    "truffle": "4.1.14"
+    "truffle": "4.1.14",
+    "web3": "^1.0.0-beta.37"
   }
 }

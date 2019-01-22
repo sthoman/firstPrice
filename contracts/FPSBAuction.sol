@@ -24,6 +24,7 @@ import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol";
+import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC721Token/IERC721Token.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
 import "./ECRecover.sol";
@@ -31,36 +32,26 @@ import "./ECRecover.sol";
 // A basic prototype FPSBAuction contract implemented as a 0x extension
 // contract.
 contract FPSBAuction is
-  SafeMath, ECRecover
+  SafeMath, ECRecover, Ownable
 {
     using LibBytes for bytes;
 
-    struct AuctionDetails {
+    struct Auction {
         uint256 beginCommitTimeSeconds;
         uint256 beginRevealTimeSeconds;
         uint256 currentTimeSeconds;
         uint256 reservePrice;
+        uint256 commitCount;
+        uint256 revealCount;
+        uint256 highestBid;
+        address highestBidder;
     }
 
-    struct BidderDetails {
-        uint256 amount;
-        uint256 salt;
-        bytes32 bid;
-        bool revealed;
-        bool committed;
-    }
+    //
+    address internal WINNER;
 
     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
-
-    // highest bid
-    uint256 commitCount;
-    uint256 revealCount;
-    uint256 highestBid;
-    address highestBidder;
-
-    // bidders
-    mapping(address => BidderDetails) public bidders;
 
     //
     //constructor(address _exchange)
@@ -70,47 +61,13 @@ contract FPSBAuction is
         EXCHANGE = IExchange(address(0)); ////TODO temporary workaround
     }
 
-    // Add a commitment, also known as a bid in this auction. Each bid
-    // is hashed by the bidder before submitting to this function. The
-    // hash can be validated during the reveal phase by ecrecover.
-    function commit(bytes32 bid, bytes memory signature)
-      public
-    {
-      address senderAddress = ecr(bid, signature);
-      require(
-            senderAddress != address(0), "INVALID_ECRECOVER"
-      );
-      require(
-            bidders[senderAddress].committed == false, "INVALID_COMMIT_UNIQUENESS"
-      );
-      bidders[senderAddress] = BidderDetails(0, 0, bid, false, true);
-      commitCount++;
-    }
-
-    // Reveal the salt used to hash each bid as well as the actual bid
-    // amount after the auction is closed. This is analogous to opening
-    // a sealed envelope containing each bidders' bid amount. When the
-    // auction is over this contract can determine the highest bid.
-    function reveal(uint256 amount, string salt, bytes memory signature)
-      public
-    {
-      // Revealing a commitment to a previous bid requires the sender
-      // to provide their salt and the actual bid amount.
-      bytes32 hashed = keccak256(abi.encodePacked(amount, salt));
-      address sender = ecr(hashed, signature);
-      require(
-          bidders[sender].bid == hashed,
-            "INVALID_REVEAL"
-      );
-      //TODO requires for auction state, also sender amount should not be string ultimately
-      bidders[sender].revealed = true;
-      bidders[sender].amount = amount;
-      if (bidders[sender].amount > highestBid) {
-        highestBid = bidders[sender].amount;
-        highestBidder = sender;
-      }
-      revealCount++;
-    }
+    /// @dev The owner of this contract is analogous to the auctioneer, who is responsible for
+    //       opening each sealed bid submitted as part of the commit-reveal scheme. Determine
+    //       the highest bid off chain but submit it here
+    /// @param winner The address of the auction winner
+  //  function completeAuction() public onlyOwner() {
+  //    WINNER = winner;
+  //  }
 
     /// @dev Matches the buy and sell orders at an amount given the rules of the auction
     /// @param buyOrder The Buyers' order aka 0x order representation of a previous bid commitment
@@ -128,38 +85,22 @@ contract FPSBAuction is
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         //
-        AuctionDetails memory auctionDetails = getAuctionDetails(sellOrder);
-        BidderDetails memory bidderDetails = getBidderDetails(buyOrder);
+        Auction memory auctionDetails = getAuctionDetails(sellOrder);
 
-        // Ensure the auction has started
+        // Ensure the auction has entered reveal phase
         require(
             auctionDetails.currentTimeSeconds >= auctionDetails.beginRevealTimeSeconds,
-            "AUCTION_NOT_STARTED"
+              "AUCTION_NOT_STARTED"
         );
-        // required??
-        //require(
-        //    sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds,
-        //    "AUCTION_EXPIRED"
-        //);
         // Validate the buyer amount is greater than the reserve price
         require(
             buyOrder.makerAssetAmount >= auctionDetails.reservePrice,
-            "INVALID_AMOUNT"
-        );
-        // Validate that this order came from the bidder that committed, which also validates the bidder has revealed
-        require(
-            bidders[msg.sender].bid == keccak256(abi.encodePacked(buyOrder.makerAssetAmount, bidderDetails.salt)),
-            "INVALID_BIDDER"
-        );
-        // Ensure all reveals are in
-        require(
-            commitCount == revealCount,
-            "INVALID_REVEAL_PHASE"
+              "INVALID_AMOUNT"
         );
         // Finally, validate that this is the highest bid
         require(
-            msg.sender == highestBidder,
-            "INVALID_BID_AMOUNT"
+            getBuyerAddress(buyOrder, buySignature) == WINNER,
+              "INVALID_WINNER"
         );
 
         // Match orders, maximally filling `buyOrder`
@@ -177,12 +118,10 @@ contract FPSBAuction is
 
     /// @dev Calculates the Auction Details for the given order
     /// @param order The sell order
-    /// @return AuctionDetails
-    function getBidderDetails(
-        LibOrder.Order memory order
-    )
+    /// @return Bid
+    function getBuyerAddress(LibOrder.Order memory order, bytes memory buySignature)
         public pure
-        returns (BidderDetails memory bidderDetails)
+        returns (address)
     {
         uint256 makerAssetDataLength = order.makerAssetData.length;
         // It is unknown the encoded data of makerAssetData, we assume the last 64 bytes
@@ -191,24 +130,27 @@ contract FPSBAuction is
             makerAssetDataLength >= 100,
             "INVALID_ASSET_DATA"
         );
-        bidderDetails.salt = order.makerAssetData.readUint256(makerAssetDataLength - 64);
+        // Get the address of the buy order creator, they should have sent their
+        // hashed bid amount along in the makerAssetData section of the order
+        bytes32 bid = order.makerAssetData.readBytes32(makerAssetDataLength - 64);
+        address buyer = ecr(bid, buySignature);
 
-        return bidderDetails;
+        return buyer;
     }
 
     /// @dev Calculates the Auction Details for the given order
     /// @param order The sell order
-    /// @return AuctionDetails
+    /// @return Auction
     function getAuctionDetails(
         LibOrder.Order memory order
     )
         public view
-        returns (AuctionDetails memory auctionDetails)
+        returns (Auction memory auctionDetails)
     {
         uint256 makerAssetDataLength = order.makerAssetData.length;
         require(
             makerAssetDataLength >= 100,
-            "INVALID_ASSET_DATA"
+              "INVALID_ASSET_DATA"
         );
         uint256 auctionBeginCommitTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 64);
         uint256 auctionBeginRevealTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 32);
@@ -216,7 +158,7 @@ contract FPSBAuction is
         // Ensure the auction reveal time is greater than commit time
         require(
             auctionBeginRevealTimeSeconds > auctionBeginCommitTimeSeconds,
-            "REVEAL_TIME_MUST_BE_GREATER"
+              "REVEAL_TIME_MUST_BE_GREATER"
         );
 
         // Ensure the auction has a reserve price

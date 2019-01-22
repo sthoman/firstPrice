@@ -8,13 +8,112 @@ from eth_account.messages import defunct_hash_message
 from sha3 import keccak_256
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-# kafka
+global commitsDeployed
+global commitsContractAddress
+global commitsContractAb
+
+#
+commitsDeployed = False
+commitsContractAddress = ''
+commitsContractAbi = ''
 commitTopic = 'firstPrice-commit'
 revealTopic = 'firstPrice-reveal'
+
+#
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+w3.eth.defaultAccount = w3.eth.accounts[0]
+
+
+# current implementation - no args in constructor
+def deployContractAtPath(path):
+    dir = os.path.dirname(__file__)
+    path = os.path.join(dir, path)
+    data = dict()
+
+    with open(path, 'r') as f:
+        datastore = json.load(f)
+
+    fpsb = w3.eth.contract(abi=datastore['abi'], bytecode=datastore['bytecode'])
+    tx_hash = fpsb.constructor().transact()
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
+    data['receipt'] = tx_receipt
+    data['abi'] = datastore['abi']
+    return data
+
+
+@app.route("/commits/create", methods=['PUT'])
+def deployCommitContractAbi():
+    res = deployContractAtPath('contracts/SealedCR.json')
+    commitsContractAddress = res['receipt'].contractAddress
+    commitsDeployed = True
+    commitsContractAbi = res['abi']
+    return jsonify({ "address": commitsContractAddress, "abi": commitsContractAbi }), 200
+
+# Only creates the commit contract if it doesn't already exist
+@app.route("/commits/register", methods=['POST'])
+def registerCommit():
+    global commitsDeployed
+    global commitsContractAddress
+    global commitsContractAbi
+    if commitsDeployed == False:
+        res = deployContractAtPath('contracts/SealedCR.json')
+        commitsContractAddress = res['receipt'].contractAddress
+        commitsDeployed = True
+        commitsContractAbi = res['abi']
+    return jsonify({ "address": commitsContractAddress, "abi": commitsContractAbi }), 200
+
+@app.route("/commits/abi", methods=['GET'])
+def getContractAbi():
+    dir = os.path.dirname(__file__)
+    path = os.path.join(dir, 'contracts/SealedCR.json')
+
+    with open(path, 'r') as f:
+        datastore = json.load(f)
+    abi = datastore["abi"]
+
+    return jsonify({"response": abi}), 200
+
+@app.route("/commits/bid", methods=['PUT'])
+def submitBidCommitment():
+    global commitsContractAddress
+    global commitsContractAbi
+    json = request.get_json()
+
+    commits = w3.eth.contract(address=commitsContractAddress, abi=commitsContractAbi)
+
+    bid = json['bid'].lstrip('0x')
+    sig = json['sig'].lstrip('0x')
+    addr = json['auction_address']
+
+    bid = w3.toBytes(hexstr=bid)
+    sig = w3.toBytes(hexstr=sig)
+
+    tx_hash = commits.functions.commit(bid, sig, addr).transact()
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
+    return jsonify({"response": tx_receipt}), 200
+
+
+
+@app.route("/auction/create", methods=['PUT'])
+def deployContractAbi():
+    dir = os.path.dirname(__file__)
+    path = os.path.join(dir, 'contracts/FPSBAuction.json')
+
+    with open(path, 'r') as f:
+        datastore = json.load(f)
+
+    fpsb = w3.eth.contract(abi=datastore['abi'], bytecode=datastore['bytecode'])
+    tx_hash = fpsb.constructor().transact()
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
+    return jsonify({ "address": tx_receipt.contractAddress }), 200
 
 @app.route("/auction/commit", methods=['POST'])
 def auctionCommit():
@@ -33,8 +132,6 @@ def auctionReveal():
     producerReveal.flush()
 
     return jsonify({"response": ""}), 200
-
-
 
 
 '''
