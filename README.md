@@ -1,36 +1,11 @@
 # firstPrice
+
 first price sealed bid auctions on the ethereum blockchain
 
-see research.txt for notes
+## Commitment Scheme 
 
-High level reqs,
-
-ganache-cli
-
-python v3.7
-
-solc v0.4.24
-
-specific Solidity version installed globally via HomeBrew,
-
-brew unlink solidity
-
-brew install https://raw.githubusercontent.com/ethereum/homebrew-ethereum/9599ce8371d9de039988f89ed577460e58a0f56a/solidity.rb
-
-For truffle deployments,
-
-npm run deploy
-
-For the middleware, this npm command is dependent on python and starts the middleware,
-
-npm run middleware
-
-the middleware is a python flask server, requires venv and solc v0.4.24
-
-see /middleware/app/__init__.py for the flask routes which utilize the ECRecover scheme
-
-must run truffle deployment before starting middleware
-
-for Kafka,
-
-https://medium.com/@Ankitthakur/apache-kafka-installation-on-mac-using-homebrew-a367cdefd273
+First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
+sealed bids for some asset within a time frame as long as the bid is above a reserve price for that
+asset. Bids are private and hidden from all the participants. It is analogous to collecting bids in
+a sealed envelope, and waiting until after the auction is over to open each envelope and determine
+the highest bidder.
