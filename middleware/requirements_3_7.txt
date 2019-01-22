@@ -62,7 +62,6 @@ pykafka==2.8.0
 pysha3==1.0.2
 python-baseconv==1.2.1
 pytz==2018.7
-PyYAML==3.13
 redis==3.0.1
 repoze.lru==0.7
 requests==2.21.0
