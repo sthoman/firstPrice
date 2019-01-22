@@ -44,11 +44,11 @@ between participants. They may be useful in price discovery for difficult to pri
 decentralized finance will usher in new types of previously unimagined digital assets, it seems natural
 that effective and fair price discovery for both buyers and sellers would be a worthy area of research.
 
-There is also a tradition of using sealed auctions in energy contracts, or in general for procurement of 
-public goods in traditional markets. Other auction formats including dutch auctions are used by the US 
+There is also a tradition of using sealed auctions in energy contracts, or in general for procurement of
+public goods in traditional markets. Other auction formats including dutch auctions are used by the US
 treasury to price and sell their bonds. It would be generally interesting to explore the game theoretic
-characteristics of various auction formats, including completely novel ones, that might help to coordinate 
-the efficient allocation of natural resources or incentivize renewable energy contracts. 
+characteristics of various auction formats, including completely novel ones, that might help to coordinate
+the efficient allocation of natural resources or incentivize renewable energy contracts.
 
 III. State Channels
 
@@ -124,3 +124,27 @@ https://eml.berkeley.edu/~mcfadden/eC103_f03/auctionlect.pdf
 https://en.wikipedia.org/wiki/First-price_sealed-bid_auction
 https://are.berkeley.edu/~sberto/ARE202svb_auctionsApril.pdf
 https://eprint.iacr.org/2018/704.pdf
+
+X. Requirements Notes
+
+ganache-cli
+python v3.7
+solc v0.4.24
+
+specific Solidity version installed globally via HomeBrew,
+
+brew unlink solidity
+brew install https://raw.githubusercontent.com/ethereum/homebrew-ethereum/9599ce8371d9de039988f89ed577460e58a0f56a/solidity.rb
+
+For truffle deployments,
+npm run deploy
+
+For the middleware, this npm command is dependent on python and starts the middleware,
+npm run middleware
+
+the middleware is a python flask server, requires venv and solc v0.4.24
+see /middleware/app/__init__.py for the flask routes which utilize the ECRecover scheme
+
+must run truffle deployment before starting middleware
+for Kafka,
+https://medium.com/@Ankitthakur/apache-kafka-installation-on-mac-using-homebrew-a367cdefd273
