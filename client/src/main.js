@@ -4,36 +4,47 @@ import VueAxios from 'vue-axios'
 import App from './App.vue'
 import ethConnect from "./eth.js";
 
-var ethereumjsTx = require('ethereumjs-tx');
-var ethereumjsAbi = require('ethereumjs-abi');
-var ethereumjsWallet = require('ethereumjs-wallet');
-var ethereumjsUtil = require('ethereumjs-util');
+var ethjsTx = require('ethereumjs-tx');
+var ethjsAbi = require('ethereumjs-abi');
+var ethjsWallet = require('ethereumjs-wallet');
+var ethjsUtil = require('ethereumjs-util');
 var axios = require('axios');
+var fpsbApi = require('./api/api.js').default;
 
 ethConnect().then(function(r) {
-  var newWallet = ethereumjsWallet.generate();
-  var newPrivateKey = newWallet.getPrivateKeyString();
 
-  window.wasllet = newWallet;
-  console.log(newWallet);
+  //localStorage.removeItem('web3registered');
+  //localStorage.removeItem('web3registered_privateKey');
+  //localStorage.removeItem('web3registered_salt');
 
-  var bidAmountInWei = 50000000000000000;
-  var msgh = ethereumjsUtil.keccak256(bidAmountInWei);
+  if (!localStorage.web3registered) {
+    var channelWallet = ethjsWallet.generate();
+    var channelPrivateKey = channelWallet.getPrivateKeyString();
+    var channelAddress = channelWallet.getAddressString();
 
-  var sig = ethereumjsUtil.ecsign(
-      ethereumjsUtil.toBuffer(msgh),
-      ethereumjsUtil.toBuffer(newPrivateKey));
+    fpsbApi.registerSigningWallet(channelWallet);
 
-  var rpcSig = "0x" +
-      ethereumjsUtil.setLengthLeft(sig.r, 32).toString("hex") +
-      ethereumjsUtil.setLengthLeft(sig.s, 32).toString("hex") +
-      ethereumjsUtil.toBuffer(sig.v).toString("hex");
+    localStorage.setItem('web3registered', JSON.stringify(channelWallet))
+    localStorage.setItem('web3registered_privateKey', channelWallet.getPrivateKeyString())
+    localStorage.setItem('web3registered_address', channelWallet.getAddressString())
+  }
 
-  var addressCR = '0xa6e273458498b2642449e1ae1b57266e7db307b1';
-  var addressAuction = '0x4cf2bfad89bc3a0a09533468040ed98336665772';
+  let bid = fpsbApi.constructSignedBid(500000000, ethjsUtil.toBuffer(localStorage.getItem('web3registered_privateKey')));
+  console.log(web3.toHex(bid.hash));
+  console.log(web3.toHex(bid.signature));
+  console.log(localStorage.getItem('web3registered_address'));
 
+  let channelAuctions = { addresses: [] };
+  for (var i = 0; i < 10; i++) {
+    fpsbApi.createAuction().then(function(response) {
+      channelAuctions.addresses.push(response.data.address);
+      localStorage.setItem('web3registered_auctions', JSON.stringify(channelAuctions))
+    })
+  }
 
+  //var recoveredAddress = ethereumjsUtil.ecrecover(msgh, sig.v, sig.r, sig.s);
 
+/*
   axios
     .get('http://127.0.0.1:5000/auction/abi')
     .then(r => {
@@ -45,7 +56,8 @@ ethConnect().then(function(r) {
         from: web3.eth.defaultAccount
       });
       console.log(ecr.toString("hex"));
-    });
+    });*/
+
 /*
   web3.eth.getTransactionCount(newWallet.getAddressString(), function (err, nonce) {
     var data = web3.eth.contract(abi).at(addressCR).commit.getData(msgh, rpcSig, addressAuction);
@@ -65,10 +77,6 @@ ethConnect().then(function(r) {
   });
 */
 });
-
-
-console.log('axios=');
-console.log(axios);
 
 Vue.config.productionTip = false
 Vue.use(VueCarousel)

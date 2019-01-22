@@ -45,24 +45,32 @@ contract SealedCR is ECRecover, Ownable
     // mapping of commit hash to bid object
     mapping(bytes32 => Bid) public bids;
 
+    // mapping of main address to address with signing permission
+    mapping(address => address) public signers;
+
     //
     event Reveal(address bidderAddress, uint256 amount);
+
+    // Register with the contract, TODO: think about this as KYC/Identity entry point
+    function register(address signerAddress) public {
+      signers[signerAddress] = msg.sender;
+    }
 
     // Add a commitment, also known as a bid in this auction. Each bid
     // is hashed by the bidder before submitting to this function. The
     // hash can be validated during a challenge by ecrecover.
     //
     function commit(bytes32 commitHash, bytes memory signature, address auctionContract)
-      public returns (address)
-      //onlyOwner()
+      public
+      //onlyOwner
     {
       address signerAddress = ecr(commitHash, signature);
       require(
             signerAddress != address(0),
               "ECRECOVER_FAILED"
       );
-      bids[commitHash] = Bid(auctionContract, signerAddress, address(0), address(0), 0, 0, signature);
-      return signerAddress;
+      address bidderAddress = signers[signerAddress];
+      bids[commitHash] = Bid(auctionContract, signerAddress, bidderAddress, address(0), 0, 0, signature);
     }
 
     // Reveal the salt used to hash each bid as well as the actual bid

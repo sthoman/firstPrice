@@ -24,26 +24,27 @@ export default {
     console.log('hello')
   },
   data () {
+    let s = JSON.parse(localStorage['web3registered_auctions']).addresses;
     return {
       slides: [
         {
-          title: 'I am Slide A',
+          title: s[0],
           id: 1
         },
         {
-          title: 'I am Slide B',
+          title: s[1],
           id: 2
         },
         {
-          title: 'I am Slide C',
+          title: s[2],
           id: 3
         },
         {
-          title: 'I am Slide D',
+          title: s[3],
           id: 4
         },
         {
-          title: 'I am Slide E',
+          title: s[4],
           id: 5
         }
       ]
