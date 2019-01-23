@@ -62,15 +62,15 @@ be a worthy area of research.
 
 ### Truffle Project
 
-The root level is a Truffle project, to build and deploy to a development node running on 127.0.0.1:8545, run the 
-following NPM scripts, after running npm install, 
+The root level is a Truffle project, to build and deploy to a development node running on 127.0.0.1 8545, 
+run the following NPM scripts, after running npm install, 
 
     "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge"
 
 ### Python Flask 
 
-The /middleware folder is a Python flask server project that requires a virtualenv and several Python dependencies
-in a few requirements text files. The following NPM scripts will build the environment, and then start it, 
+The /middleware folder is a Python flask server project that requires a virtualenv and several Python dependencies in a few requirements text files. The following NPM scripts will build the environment, 
+and then start it, 
 
     "venv-build": "venv/bin/pip3 install -r requirements_3_7.txt && venv/bin/pip install -r requirements_2_7.txt",
     "venv": "source middleware/venv/bin/activate",
