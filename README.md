@@ -46,6 +46,6 @@ the buyers and sellers throughout the auction. Buyers would sign their commitmen
 special account created on their client, which is tied to their master key. 
 
 This type of delegated signing means the user only has to use Metamask once to enter the auction, which calls 
-the smart contract to establish which account they will be using to sign their transactions. 
-
-## Game Theory
+the smart contract to establish which account they will be using to sign their transactions. During the reveal
+phase of the auction, if disputes between participants were to arise, any one participant could call the smart
+contract to prove their commitment to a certain bid. 
