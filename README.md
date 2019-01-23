@@ -25,6 +25,18 @@ If the resultant hashes match, the bid is valid. The contract will track the hig
 function is called by each participant during the reveal phase. Once all reveals are complete, the highest
 bidder can be determined on chain and an order can be signed and filled to complete the transaction.
 
+## State Channel
+
+In this scheme, hashed bids are commitments and cleartext bids reveal the true value of commitments. Instead
+of requiring participants to transact with a smart contract, hashed bid commitments could be distributed amongst 
+the buyers and sellers throughout the auction. Buyers would sign their commitments using the private key of a 
+special account created on their client, which is tied to their master key. 
+
+This type of delegated signing means the user only has to use Metamask once to enter the auction, which calls 
+the smart contract to establish which account they will be using to sign their transactions. During the reveal
+phase of the auction, if disputes between participants were to arise, any one participant could call the smart
+contract to prove their commitment to a certain bid. 
+
 ## Why Blockchain?
 
 A blockchain is a perfect medium for recording commitments to some value that may be revealed at a later 
@@ -37,18 +49,6 @@ with interesting game theoretic properties like Nash equilibria. They may be use
 difficult to price goods or services. If decentralization will usher in new types of previously unimagined 
 digital assets, it seems natural that effective and fair price discovery for both buyers and sellers would 
 be a worthy area of research.
-
-## State Channel
-
-In this scheme, hashed bids are commitments and cleartext bids reveal the true value of commitments. Instead
-of requiring participants to transact with a smart contract, hashed bid commitments could be distributed amongst 
-the buyers and sellers throughout the auction. Buyers would sign their commitments using the private key of a 
-special account created on their client, which is tied to their master key. 
-
-This type of delegated signing means the user only has to use Metamask once to enter the auction, which calls 
-the smart contract to establish which account they will be using to sign their transactions. During the reveal
-phase of the auction, if disputes between participants were to arise, any one participant could call the smart
-contract to prove their commitment to a certain bid. 
 
 ## Setup
 
