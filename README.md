@@ -5,9 +5,8 @@ First price sealed bid auctions on the ethereum blockchain
 ## Abstract
 
 This project, for Lighthouse Labs' October 2018 blockchain cohort, is primarily an exploration of 
-using the Ethereum blockchain to securely compute the winning bid in an auction amongst bidders in
-a sealed auction; that is, where participants are not aware of eachothers' bid amounts until after 
-the auction is over.
+using the Ethereum blockchain to securely compute the winning bid amongst bidders in a sealed auction; 
+that is, where participants are not aware of eachothers' bid amounts until after the auction is over.
 
 ## Commitment Scheme 
 
@@ -39,7 +38,6 @@ with interesting game theoretic properties like Nash equilibria. They may be use
 difficult to price goods or services. If decentralized finance will usher in new types of previously unimagined 
 digital assets, it seems natural that effective and fair price discovery for both buyers and sellers would be a 
 worthy area of research.
-
 
 ## State Channel
 
