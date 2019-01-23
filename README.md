@@ -1,12 +1,12 @@
 # firstPrice
 
-First price sealed bid auctions on the ethereum blockchain
+First price sealed bid auctions on the ethereum blockchain (WIP).
 
 ## Abstract
 
 This project, for Lighthouse Labs' October 2018 blockchain cohort, is primarily an exploration of 
 using the Ethereum blockchain to securely compute the winning bid amongst bidders in a sealed auction; 
-that is, where participants are not aware of eachothers' bid amounts until after the auction is over.
+that is, where participants are not aware of each others' bid amounts until after the auction is over.
 
 ## Commitment Scheme 
 
@@ -49,3 +49,33 @@ This type of delegated signing means the user only has to use Metamask once to e
 the smart contract to establish which account they will be using to sign their transactions. During the reveal
 phase of the auction, if disputes between participants were to arise, any one participant could call the smart
 contract to prove their commitment to a certain bid. 
+
+## Setup
+
+- Install Python v3.7 
+- Install virtualenv (for Python)
+- Install pip/pip3 (for Python)
+- Install Ganache
+- Install Truffle
+- Install solc v0.4.24
+- Install Vue.js
+
+### Truffle Project
+
+The root level is a Truffle project, to build and deploy to a development node running on 127.0.0.1:8545, run the 
+following NPM scripts, after running npm install, 
+
+    "deploy": "./node_modules/.bin/truffle deploy --reset --network bridge"
+
+### Python Flask 
+
+The /middleware folder is a Python flask server project that requires a virtualenv and several Python dependencies
+in a few requirements text files. The following NPM scripts will build the environment, and then start it, 
+
+    "venv-build": "venv/bin/pip3 install -r requirements_3_7.txt && venv/bin/pip install -r requirements_2_7.txt",
+    "venv": "source middleware/venv/bin/activate",
+
+This command will copy the smart contract metadata into the Python project and then start the flask server, 
+
+    "middleware": "mkdir -p middleware/app/contracts/ && cp -R build/contracts/*.* middleware/app/contracts/ && cd middleware && flask run",
+   
