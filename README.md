@@ -10,11 +10,10 @@ that is, where participants are not aware of eachothers' bid amounts until after
 
 ## Commitment Scheme 
 
-First price sealed bid auctions are a kind of auction in which n participants are allowed to submit
-sealed bids for some asset within a time frame as long as the bid is above a reserve price for that
-asset. Bids are private and hidden from all the participants. It is analogous to collecting bids in
-a sealed envelope, and waiting until after the auction is over to open each envelope and determine
-the highest bidder.
+First price sealed bid auctions are a kind of auction in which n participants are allowed to submit sealed 
+bids for some asset within a time frame as long as the bid is above a reserve price for that asset. Bids are 
+private and hidden from all the participants. It is analogous to collecting bids in a sealed envelope, and 
+waiting until after the auction is over to open each envelope and determine the highest bidder.
 
 The SealedCR contract (standing for, sealed commit reveal) implements a commitment scheme where N bidders
 submit a hash of their bid amount during the commitment phase of the auction. The commitment phase of the 
@@ -35,10 +34,18 @@ on the fairness of the auction if provided with an honest record of those commit
 
 Even more importantly, this kind of auction is essentially a game of incomplete information amongst bidders 
 with interesting game theoretic properties like Nash equilibria. They may be useful in price discovery for 
-difficult to price goods or services. If decentralized finance will usher in new types of previously unimagined 
-digital assets, it seems natural that effective and fair price discovery for both buyers and sellers would be a 
-worthy area of research.
+difficult to price goods or services. If decentralization will usher in new types of previously unimagined 
+digital assets, it seems natural that effective and fair price discovery for both buyers and sellers would 
+be a worthy area of research.
 
 ## State Channel
+
+In this scheme, hashed bids are commitments and cleartext bids reveal the true value of commitments. Instead
+of requiring participants to transact with a smart contract, hashed bid commitments could be distributed amongst 
+the buyers and sellers throughout the auction. Buyers would sign their commitments using the private key of a 
+special account created on their client, which is tied to their master key. 
+
+This type of delegated signing means the user only has to use Metamask once to enter the auction, which calls 
+the smart contract to establish which account they will be using to sign their transactions. 
 
 ## Game Theory
