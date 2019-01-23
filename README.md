@@ -8,7 +8,7 @@ This project, for Lighthouse Labs' October 2018 blockchain cohort, is primarily 
 using the Ethereum blockchain to securely compute the winning bid amongst bidders in a sealed auction; 
 that is, where participants are not aware of each others' bid amounts until after the auction is over.
 
-## Commitment Scheme 
+### Commitment Scheme 
 
 First price sealed bid auctions are a kind of auction in which n participants are allowed to submit sealed 
 bids for some asset within a time frame as long as the bid is above a reserve price for that asset. Bids are 
@@ -25,7 +25,7 @@ If the resultant hashes match, the bid is valid. The contract will track the hig
 function is called by each participant during the reveal phase. Once all reveals are complete, the highest
 bidder can be determined on chain and an order can be signed and filled to complete the transaction.
 
-## State Channel
+### State Channel
 
 In this scheme, hashed bids are commitments and cleartext bids reveal the true value of commitments. Instead
 of requiring participants to transact with a smart contract, hashed bid commitments could be distributed amongst 
@@ -37,7 +37,7 @@ the smart contract to establish which account they will be using to sign their t
 phase of the auction, if disputes between participants were to arise, any one participant could call the smart
 contract to prove their commitment to a certain bid. 
 
-## Why Blockchain?
+### Why Blockchain?
 
 A blockchain is a perfect medium for recording commitments to some value that may be revealed at a later 
 time or state. So if designed correctly, it should be very difficult for auction participants to collude
