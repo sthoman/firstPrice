@@ -28,7 +28,7 @@ future==0.17.1
 hexbytes==0.1.0
 humanfriendly==4.17
 idna==2.8
-Jinja2==2.10
+Jinja2==2.11.3
 lru-dict==1.1.6
 MarkupSafe==1.1.0
 mock==2.0.0
@@ -102,7 +102,7 @@ hexbytes==0.1.0
 humanfriendly==4.17
 idna==2.8
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 kafka-python==1.4.4
 kazoo==2.5.0
 lru-dict==1.1.6
